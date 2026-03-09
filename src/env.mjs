@@ -13,14 +13,13 @@ export const env = createEnv({
       .refine(
         (str) => !str.includes("YOUR_MYSQL_URL_HERE"),
         "You forgot to change the default URL",
-      ),
+      )
+      .optional(), // Keep optional as we migrate away
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
-    CLERK_SECRET_KEY: z.string(),
-    UPLOADTHING_SECRET: z.string(),
-    UPLOADTHING_APP_ID: z.string(),
-    ADMIN_USER_ID: z.string(),
+    APPWRITE_API_KEY: z.string(),
+    ADMIN_USER_ID: z.string().optional(),
   },
 
   /**
@@ -30,7 +29,8 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
+    NEXT_PUBLIC_APPWRITE_ENDPOINT: z.string(),
+    NEXT_PUBLIC_APPWRITE_PROJECT_ID: z.string(),
   },
 
   /**
@@ -39,13 +39,11 @@ export const env = createEnv({
    */
   runtimeEnv: {
     ADMIN_USER_ID: process.env.ADMIN_USER_ID,
-    UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
-    UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
-      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
-    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+    NEXT_PUBLIC_APPWRITE_ENDPOINT: process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT,
+    NEXT_PUBLIC_APPWRITE_PROJECT_ID: process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID,
+    APPWRITE_API_KEY: process.env.APPWRITE_API_KEY,
 
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
