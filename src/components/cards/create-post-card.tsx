@@ -7,7 +7,6 @@ import { Card } from "@/components/ui/card";
 import { usePathname, useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
-import { generateReactHelpers } from "@uploadthing/react/hooks";
 import useFileStore from "@/store/fileStore";
 import usePost from "@/store/post";
 import PostPrivacyMenu from "@/components/menus/post-privacy-menu";
@@ -15,12 +14,23 @@ import CreatePostInput from "@/components/create-post-input";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import NSFWFilter from "nsfw-filter";
-import type { OurFileRouter } from "@/app/api/uploadthing/core";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import useDialog from "@/store/dialog";
 import CreateButton from "@/components/buttons/create-button";
 
-const { useUploadThing } = generateReactHelpers<OurFileRouter>();
+async function uploadFileToAppWrite(file: File): Promise<string | undefined> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) return undefined;
+  const data = await res.json() as { url: string };
+  return data.url;
+}
 
 const CreatePostCard: React.FC = ({}) => {
   const router = useRouter();
@@ -38,8 +48,6 @@ const CreatePostCard: React.FC = ({}) => {
   const { selectedFile, setSelectedFile, isSelectedImageSafe } = useFileStore();
 
   const { postPrivacy } = usePost();
-
-  const { startUpload } = useUploadThing("postImage");
 
   const [threadData, setThreadData] = React.useState({
     privacy: postPrivacy,
@@ -102,19 +110,21 @@ const CreatePostCard: React.FC = ({}) => {
       }
     }
 
-    const imgRes = await startUpload(selectedFile);
+    const imgRes = checkUploadedImage
+      ? await uploadFileToAppWrite(checkUploadedImage)
+      : undefined;
 
     const promise = replyPostInfo
       ? replyToPost({
           text: JSON.stringify(threadData.text, null, 2),
           postId: replyPostInfo.id,
-          imageUrl: imgRes ? imgRes[0]?.url : undefined,
+          imageUrl: imgRes,
           privacy: threadData.privacy,
           postAuthor: replyPostInfo.author.id,
         })
       : createThread({
           text: JSON.stringify(threadData.text, null, 2),
-          imageUrl: imgRes ? imgRes[0]?.url : undefined,
+          imageUrl: imgRes,
           privacy: threadData.privacy,
           quoteId: quoteInfo?.id,
           postAuthor: quoteInfo?.author.id,

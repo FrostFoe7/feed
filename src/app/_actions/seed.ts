@@ -1,25 +1,22 @@
 "use server";
 
-import { db } from "@/server/db";
-import { currentUser } from "@clerk/nextjs";
+import {
+  getUserById,
+  createManyUsers,
+  createManyPosts,
+  createManyNotifications,
+  getFakeUserIds,
+  deleteFakeUsersFromDb,
+} from "@/lib/appwrite/db";
+import { getLoggedInUser } from "@/lib/appwrite/session";
 import { faker } from "@faker-js/faker";
-import { NotificationType } from "@prisma/client";
 
 export async function checkAdmin() {
-  const user = await currentUser();
+  const user = await getLoggedInUser();
+  if (!user) return { success: false };
 
-  const res = await db.user.findUnique({
-    where: {
-      id: user?.id,
-      isAdmin: true,
-      verified: true,
-    },
-    select: {
-      username: true,
-    },
-  });
-
-  if (!res) return { success: false };
+  const dbUser = await getUserById(user.$id);
+  if (!dbUser || !dbUser.isAdmin || !dbUser.verified) return { success: false };
 
   return { success: true };
 }
@@ -27,7 +24,7 @@ export async function checkAdmin() {
 export async function createFakeUsers() {
   const isAdmin = await checkAdmin();
 
-  if (!isAdmin) return null;
+  if (!isAdmin.success) return null;
 
   const usersToCreate = [];
 
@@ -51,9 +48,7 @@ export async function createFakeUsers() {
     });
   }
 
-  const alldata = await db.user.createMany({
-    data: usersToCreate,
-  });
+  const alldata = await createManyUsers(usersToCreate);
 
   return alldata;
 }
@@ -61,25 +56,15 @@ export async function createFakeUsers() {
 export async function getUsersId() {
   const isAdmin = await checkAdmin();
 
-  if (!isAdmin) return null;
+  if (!isAdmin.success) return null;
 
-  const alldata = await db.user.findMany({
-    where: {
-      verified: false,
-    },
-    take: 50,
-    select: {
-      id: true,
-    },
-  });
-
-  return alldata.map((user) => user.id);
+  return await getFakeUserIds();
 }
 
 export async function createFakePost() {
   const isAdmin = await checkAdmin();
 
-  if (!isAdmin) return null;
+  if (!isAdmin.success) return null;
 
   const userIds = await getUsersId();
 
@@ -97,7 +82,7 @@ export async function createFakePost() {
     posts.push(newPost);
   }
 
-  await db.post.createMany({ data: posts });
+  await createManyPosts(posts);
 
   return { success: true };
 }
@@ -105,9 +90,9 @@ export async function createFakePost() {
 export async function createFakeNotifications() {
   const isAdmin = await checkAdmin();
 
-  if (!isAdmin) return null;
+  if (!isAdmin.success) return null;
 
-  const user = await currentUser();
+  const user = await getLoggedInUser();
   const userIds = await getUsersId();
 
   if (!userIds) {
@@ -117,16 +102,16 @@ export async function createFakeNotifications() {
   const notifications = [];
   for (const userId of userIds) {
     const newNotification = {
-      type: NotificationType.LIKE,
+      type: "LIKE",
       message: '"Your message here"',
       senderUserId: userId,
-      receiverUserId: user?.id,
+      receiverUserId: user?.$id,
     };
 
     notifications.push(newNotification);
   }
 
-  await db.notification.createMany({ data: notifications });
+  await createManyNotifications(notifications);
 
   return { success: true };
 }
@@ -134,45 +119,9 @@ export async function createFakeNotifications() {
 export async function deleteFakeUsers() {
   const isAdmin = await checkAdmin();
 
-  if (!isAdmin) return null;
+  if (!isAdmin.success) return null;
 
-  const alldata = await db.user.deleteMany({
-    where: {
-      verified: false,
-    },
-  });
+  const alldata = await deleteFakeUsersFromDb();
 
   return alldata;
 }
-
-// VERRRRRYYYYY DANGEROUS ☠️
-
-// export async function renameUsernames() {
-//   const isAdmin = await checkAdmin();
-
-//   if (!isAdmin) return null;
-
-//   const allUsers = await db.user.findMany({
-//     select: {
-//       id: true,
-//       username: true,
-//     },
-//   });
-
-//   const updatedUsernames = allUsers.map((user) => ({
-//     id: user.id,
-//     username: user.username + "_old",
-//   }));
-//   // return alldata.map(user => user.id)
-
-//   await Promise.all(
-//     updatedUsernames.map(async (updatedUser) => {
-//       await db.user.update({
-//         where: { id: updatedUser.id },
-//         data: { username: updatedUser.username },
-//       });
-//     }),
-//   );
-
-//   return { success: true };
-// }

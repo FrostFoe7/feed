@@ -1,6 +1,6 @@
-import { PostPrivacy } from "@prisma/client";
-
 import { create } from "zustand";
+
+export type PostPrivacy = "ANYONE" | "FOLLOWED" | "MENTIONED";
 
 interface PostState {
   postPrivacy: PostPrivacy;
@@ -8,7 +8,7 @@ interface PostState {
 }
 
 const usePost = create<PostState>((set) => ({
-  postPrivacy: PostPrivacy.ANYONE,
+  postPrivacy: "ANYONE",
   setPostPrivacy: (privacy) => set({ postPrivacy: privacy }),
 }));
 

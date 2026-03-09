@@ -1,8 +1,7 @@
 import MobileNavbar from "@/components/layouts/mobile-navbar";
 import SiteHeader from "@/components/layouts/site-header";
-import { getUserEmail } from "@/lib/utils";
-import { db } from "@/server/db";
-import { currentUser } from "@clerk/nextjs";
+import { getLoggedInUser } from "@/lib/appwrite/session";
+import { getUserByEmail } from "@/lib/appwrite/db";
 import { redirect } from "next/navigation";
 
 interface PagesLayoutProps {
@@ -10,16 +9,11 @@ interface PagesLayoutProps {
 }
 
 export default async function PagesLayout({ children }: PagesLayoutProps) {
-  const user = await currentUser();
+  const user = await getLoggedInUser();
 
   if (!user) redirect("/login");
 
-  const dbUser = await db.user.findUnique({
-    where: {
-      id: user?.id,
-      email: getUserEmail(user),
-    },
-  });
+  const dbUser = await getUserByEmail(user.email);
 
   if (!dbUser) redirect("/account?origin=/");
 

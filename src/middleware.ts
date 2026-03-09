@@ -1,35 +1,29 @@
-import { NextResponse } from "next/server";
-import { authMiddleware, clerkClient } from "@clerk/nextjs";
+import { NextResponse, type NextRequest } from "next/server";
 
-export default authMiddleware({
-  publicRoutes: ["/login(.*)", "/sso-callback(.*)", "/api(.*)", "/@(.*)"],
-  async afterAuth(auth, req) {
-    if (auth.isPublicRoute) {
-      return NextResponse.next();
-    }
+const publicRoutes = ["/login", "/sso-callback", "/api"];
 
-    const url = new URL(req.nextUrl.origin);
+function isPublicRoute(pathname: string) {
+  return publicRoutes.some((route) => pathname.startsWith(route));
+}
 
-    if (!auth.userId) {
-      url.pathname = "/login";
-      return NextResponse.redirect(url);
-    }
+export default function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
 
-    const user = await clerkClient.users.getUser(auth.userId);
+  // Allow public routes and profile routes (@username)
+  if (isPublicRoute(pathname) || pathname.startsWith("/@")) {
+    return NextResponse.next();
+  }
 
-    if (!user) {
-      throw new Error("User not found.");
-    }
+  // Check for session cookie
+  const session = req.cookies.get("appwrite-session");
 
-    if (!user.privateMetadata.role) {
-      await clerkClient.users.updateUserMetadata(auth.userId, {
-        privateMetadata: {
-          role: "user",
-        },
-      });
-    }
-  },
-});
+  if (!session?.value) {
+    const url = new URL("/login", req.nextUrl.origin);
+    return NextResponse.redirect(url);
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],

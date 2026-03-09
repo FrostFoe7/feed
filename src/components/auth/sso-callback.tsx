@@ -1,16 +1,32 @@
 "use client";
 
 import * as React from "react";
-import { useClerk } from "@clerk/nextjs";
+import { handleOAuthCallback } from "@/lib/appwrite/auth-actions";
 import { Icons } from "@/components/icons";
+import { useRouter } from "next/navigation";
 import { type SSOCallbackPageProps } from "@/app/(auth)/sso-callback/page";
 
 export default function SSOCallback({ searchParams }: SSOCallbackPageProps) {
-  const { handleRedirectCallback } = useClerk();
+  const router = useRouter();
 
   React.useEffect(() => {
-    void handleRedirectCallback(searchParams);
-  }, [searchParams, handleRedirectCallback]);
+    async function handleCallback() {
+      const { userId, secret } = searchParams;
+      if (userId && secret) {
+        try {
+          await handleOAuthCallback(userId, secret);
+          router.push("/");
+        } catch (error) {
+          console.error("OAuth callback error:", error);
+          router.push("/login");
+        }
+      } else {
+        router.push("/login");
+      }
+    }
+
+    void handleCallback();
+  }, [searchParams, router]);
 
   return (
     <div

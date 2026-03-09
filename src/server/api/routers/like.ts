@@ -5,95 +5,49 @@ import {
   publicProcedure,
 } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import { GET_USER } from "@/server/constant";
+import {
+  findLike,
+  createLike,
+  deleteLike,
+  getPostLikes,
+  getPostReposts,
+  getPostById,
+  getUserById,
+  createNotification,
+  findNotification,
+  deleteNotification,
+  getFollowers,
+} from "@/lib/appwrite/db";
 
 export const likeRouter = createTRPCRouter({
   toggleLike: privateProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      }),
-    )
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ input: { id }, ctx }) => {
       const { userId } = ctx;
 
-      const data = { postId: id, userId };
+      const existingLike = await findLike(id, userId);
 
-      const existingLike = await ctx.db.like.findUnique({
-        where: {
-          postId_userId: data,
-        },
-      });
+      if (!existingLike) {
+        await createLike(id, userId);
 
-      if (existingLike == null) {
-        const transactionResult = await ctx.db.$transaction(async (prisma) => {
-          const createdLike = await prisma.like.create({
-            data,
-            select: {
-              post: {
-                select: {
-                  text: true,
-                  author: true,
-                },
-              },
-            },
+        const post = await getPostById(id);
+        if (post) {
+          await createNotification({
+            type: "LIKE",
+            senderUserId: userId,
+            receiverUserId: post.authorId,
+            postId: id,
+            message: post.text,
           });
-
-          const createdNotification = await prisma.notification.create({
-            data: {
-              type: "LIKE",
-              senderUserId: userId,
-              receiverUserId: createdLike.post.author.id,
-              postId: data.postId,
-              message: createdLike.post.text,
-            },
-          });
-
-          return {
-            createdLike,
-            createdNotification,
-          };
-        });
-
-        if (!transactionResult) {
-          throw new TRPCError({ code: "NOT_IMPLEMENTED" });
         }
 
         return { addedLike: true };
       } else {
-        const transactionResult = await ctx.db.$transaction(async (prisma) => {
-          const removeLike = await prisma.like.delete({
-            where: {
-              postId_userId: data,
-            },
-          });
+        await deleteLike(id, userId);
 
-          const notification = await prisma.notification.findFirst({
-            where: {
-              senderUserId: userId,
-              postId: data.postId,
-              type: "LIKE",
-            },
-            select: {
-              id: true,
-            },
-          });
-
-          if (notification) {
-            await prisma.notification.delete({
-              where: {
-                id: notification.id,
-              },
-            });
-          }
-
-          return {
-            removeLike,
-          };
-        });
-
-        if (!transactionResult) {
-          throw new TRPCError({ code: "NOT_IMPLEMENTED" });
+        const notification = await findNotification(userId, id, "LIKE");
+        if (notification) {
+          await deleteNotification(notification.$id);
         }
 
         return { addedLike: false };
@@ -101,38 +55,40 @@ export const likeRouter = createTRPCRouter({
     }),
 
   postLikeInfo: publicProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      }),
-    )
-    .query(async ({ input, ctx }) => {
-      const userProfileInfo = await ctx.db.post.findUnique({
-        where: {
-          id: input.id,
-        },
-        select: {
-          likes: {
-            select: {
-              user: {
-                select: {
-                  ...GET_USER,
-                },
-              },
-            },
-          },
-          reposts: {
-            select: {
-              userId: true,
-            },
-          },
-        },
-      });
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      const post = await getPostById(input.id);
+      if (!post) throw new TRPCError({ code: "NOT_FOUND" });
 
-      if (!userProfileInfo) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
+      const [likes, reposts] = await Promise.all([
+        getPostLikes(input.id),
+        getPostReposts(input.id),
+      ]);
 
-      return userProfileInfo;
+      const likeUsers = await Promise.all(
+        likes.map(async (like) => {
+          const user = await getUserById(like.userId);
+          if (!user) return null;
+          const followers = await getFollowers(user.$id);
+          return {
+            user: {
+              id: user.$id,
+              image: user.image,
+              fullname: user.fullname,
+              username: user.username,
+              bio: user.bio,
+              link: user.link,
+              createdAt: new Date(user.$createdAt),
+              isAdmin: user.isAdmin,
+              followers: followers.map((f) => ({ id: f.$id, image: f.image })),
+            },
+          };
+        }),
+      );
+
+      return {
+        likes: likeUsers.filter(Boolean) as NonNullable<(typeof likeUsers)[number]>[],
+        reposts: reposts.map((r) => ({ userId: r.userId })),
+      };
     }),
 });

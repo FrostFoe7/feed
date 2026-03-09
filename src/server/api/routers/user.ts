@@ -6,270 +6,81 @@ import {
 } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import {
-  GET_USER,
-  GET_COUNT,
-  GET_LIKES,
-  GET_REPLIES,
-  GET_REPOSTS,
-} from "@/server/constant";
+  getUserByUsername,
+  getUserPosts,
+  getUserReposts,
+  getAllUsers,
+  isFollowing,
+  createFollow,
+  deleteFollow,
+  createNotification,
+  findNotification,
+  deleteNotification,
+  getFollowers,
+  enrichPosts,
+} from "@/lib/appwrite/db";
 
 export const userRouter = createTRPCRouter({
   Info: publicProcedure
-    .input(
-      z.object({
-        username: z.string(),
-      }),
-    )
-    .query(async ({ input, ctx }) => {
-      const isUser = await ctx.db.user.findUnique({
-        where: {
-          username: input.username,
-        },
-      });
+    .input(z.object({ username: z.string() }))
+    .query(async ({ input }) => {
+      const user = await getUserByUsername(input.username);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
 
-      if (!isUser) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-
-      const userProfileInfo = await ctx.db.user.findUnique({
-        where: {
-          username: input.username,
-        },
-        include: {
-          followers: true,
-        },
-      });
-
-      if (!userProfileInfo) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
+      const followers = await getFollowers(user.$id);
 
       return {
         userDetails: {
-          id: userProfileInfo.id,
-          image: userProfileInfo.image,
-          fullname: userProfileInfo.fullname,
-          username: userProfileInfo.username,
-          bio: userProfileInfo.bio,
-          link: userProfileInfo.link,
-          privacy: userProfileInfo.privacy,
-          createdAt: userProfileInfo.createdAt,
-          isAdmin: userProfileInfo.isAdmin,
-          followers: userProfileInfo.followers,
+          id: user.$id,
+          image: user.image,
+          fullname: user.fullname,
+          username: user.username,
+          bio: user.bio,
+          link: user.link,
+          privacy: user.privacy,
+          createdAt: new Date(user.$createdAt),
+          isAdmin: user.isAdmin,
+          followers: followers.map((f: { $id: string; image: string | null; username: string; fullname: string | null }) => ({
+            id: f.$id,
+            image: f.image,
+            username: f.username,
+            fullname: f.fullname,
+          })),
         },
       };
     }),
 
   postInfo: publicProcedure
-    .input(
-      z.object({
-        username: z.string(),
-      }),
-    )
-    .query(async ({ input, ctx }) => {
-      const isUser = await ctx.db.user.findUnique({
-        where: {
-          username: input.username,
-        },
-      });
+    .input(z.object({ username: z.string() }))
+    .query(async ({ input }) => {
+      const user = await getUserByUsername(input.username);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
 
-      if (!isUser) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-
-      const userProfileInfo = await ctx.db.post.findMany({
-        where: {
-          author: {
-            username: input.username,
-          },
-          parentPostId: null,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        select: {
-          id: true,
-          createdAt: true,
-          text: true,
-          images: true,
-          parentPostId: true,
-          quoteId: true,
-          author: {
-            select: {
-              ...GET_USER,
-            },
-          },
-          ...GET_LIKES,
-          ...GET_REPLIES,
-          ...GET_COUNT,
-          ...GET_REPOSTS,
-        },
-      });
-
-      if (!userProfileInfo) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-
-      const posts = userProfileInfo.map((post) => ({
-        id: post.id,
-        createdAt: post.createdAt,
-        text: post.text,
-        images: post.images,
-        parentPostId: post.parentPostId,
-        author: post.author,
-        count: {
-          likeCount: post._count.likes,
-          replyCount: post._count.replies,
-        },
-        likes: post.likes,
-        replies: post.replies,
-        reposts: post.reposts,
-        quoteId: post.quoteId,
-      }));
-
-      return posts;
+      const posts = await getUserPosts(user.$id, false);
+      const enriched = await enrichPosts(posts);
+      return enriched;
     }),
 
   repliesInfo: publicProcedure
-    .input(
-      z.object({
-        username: z.string(),
-      }),
-    )
-    .query(async ({ input, ctx }) => {
-      const isUser = await ctx.db.user.findUnique({
-        where: {
-          username: input.username,
-        },
-      });
+    .input(z.object({ username: z.string() }))
+    .query(async ({ input }) => {
+      const user = await getUserByUsername(input.username);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
 
-      if (!isUser) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-
-      const userProfileInfo = await ctx.db.post.findMany({
-        where: {
-          author: {
-            username: input.username,
-          },
-          parentPostId: {
-            not: null,
-          },
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        select: {
-          id: true,
-          createdAt: true,
-          text: true,
-          images: true,
-          parentPostId: true,
-          quoteId: true,
-          author: {
-            select: {
-              ...GET_USER,
-            },
-          },
-          ...GET_LIKES,
-          ...GET_REPLIES,
-          ...GET_COUNT,
-          ...GET_REPOSTS,
-        },
-      });
-
-      if (!userProfileInfo) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-
-      const replies = userProfileInfo.map((post) => ({
-        id: post.id,
-        createdAt: post.createdAt,
-        text: post.text,
-        images: post.images,
-        parentPostId: post.parentPostId,
-        author: post.author,
-        count: {
-          likeCount: post._count.likes,
-          replyCount: post._count.replies,
-        },
-        likes: post.likes,
-        replies: post.replies,
-        reposts: post.reposts,
-        quoteId: post.quoteId,
-      }));
-
-      return replies;
+      const replies = await getUserPosts(user.$id, true);
+      const enriched = await enrichPosts(replies);
+      return enriched;
     }),
 
   repostsInfo: publicProcedure
-    .input(
-      z.object({
-        username: z.string(),
-      }),
-    )
-    .query(async ({ input, ctx }) => {
-      const isUser = await ctx.db.user.findUnique({
-        where: {
-          username: input.username,
-        },
-      });
+    .input(z.object({ username: z.string() }))
+    .query(async ({ input }) => {
+      const user = await getUserByUsername(input.username);
+      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
 
-      if (!isUser) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-
-      const userProfileInfo = await ctx.db.repost.findMany({
-        where: {
-          user: {
-            username: input.username,
-          },
-        },
-        select: {
-          post: {
-            select: {
-              id: true,
-              createdAt: true,
-              text: true,
-              images: true,
-              parentPostId: true,
-              quoteId: true,
-              author: {
-                select: {
-                  ...GET_USER,
-                },
-              },
-              ...GET_LIKES,
-              ...GET_REPLIES,
-              ...GET_COUNT,
-              ...GET_REPOSTS,
-            },
-          },
-        },
-      });
-
-      if (!userProfileInfo) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-
-      const reposts = userProfileInfo.map((postObject) => ({
-        id: postObject.post.id,
-        createdAt: postObject.post.createdAt,
-        text: postObject.post.text,
-        images: postObject.post.images,
-        parentPostId: postObject.post.parentPostId,
-        author: postObject.post.author,
-        count: {
-          likeCount: postObject.post._count.likes,
-          replyCount: postObject.post._count.replies,
-        },
-        likes: postObject.post.likes,
-        replies: postObject.post.replies,
-        reposts: postObject.post.reposts,
-        quoteId: postObject.post.quoteId,
-      }));
-
-      return reposts;
+      const reposts = await getUserReposts(user.$id);
+      const enriched = await enrichPosts(reposts);
+      return enriched;
     }),
 
   allUsers: privateProcedure
@@ -279,27 +90,30 @@ export const userRouter = createTRPCRouter({
         cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
       }),
     )
-    .query(async ({ input: { limit = 10, cursor }, ctx }) => {
-      const allUsers = await ctx.db.user.findMany({
-        take: limit + 1,
-        cursor: cursor ? { createdAt_id: cursor } : undefined,
-        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-        select: {
-          ...GET_USER,
-        },
-      });
+    .query(async ({ input: { limit = 10, cursor } }) => {
+      const allUsersResult = await getAllUsers(limit + 1, cursor?.id);
 
       let nextCursor: typeof cursor | undefined;
 
-      if (allUsers.length > limit) {
-        const nextItem = allUsers.pop();
-        if (nextItem != null) {
+      if (allUsersResult.length > limit) {
+        const nextItem = allUsersResult.pop();
+        if (nextItem) {
           nextCursor = {
-            id: nextItem.id,
-            createdAt: nextItem.createdAt,
+            id: nextItem.$id,
+            createdAt: new Date(nextItem.$createdAt),
           };
         }
       }
+
+      const allUsers = allUsersResult.map((u) => ({
+        id: u.$id,
+        username: u.username,
+        fullname: u.fullname,
+        image: u.image,
+        bio: u.bio,
+        createdAt: new Date(u.$createdAt),
+      }));
+
       return {
         allUsers,
         nextCursor,
@@ -307,110 +121,27 @@ export const userRouter = createTRPCRouter({
     }),
 
   toggleFollow: privateProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      }),
-    )
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const { userId } = ctx;
 
-      const isAlreadyFollowing = await ctx.db.user.findUnique({
-        where: {
-          id: userId,
-        },
-        select: {
-          id: true,
-          username: true,
-          following: {
-            where: {
-              id: input.id,
-            },
-          },
-        },
-      });
+      const alreadyFollowing = await isFollowing(userId, input.id);
 
-      if (isAlreadyFollowing?.following.length === 0) {
-        const transactionResult = await ctx.db.$transaction(async (prisma) => {
-          const followUser = await prisma.user.update({
-            where: { id: userId },
-            data: {
-              following: {
-                connect: {
-                  id: input.id,
-                },
-              },
-            },
-            select: {
-              id: true,
-              username: true,
-            },
-          });
-
-          const createdNotification = await prisma.notification.create({
-            data: {
-              type: "FOLLOW",
-              senderUserId: userId,
-              receiverUserId: input.id,
-              message: `"Followed you"`,
-            },
-            select: {
-              id: true,
-            },
-          });
-
-          return {
-            followUser,
-            createdNotification,
-          };
+      if (!alreadyFollowing) {
+        await createFollow(userId, input.id);
+        await createNotification({
+          type: "FOLLOW",
+          senderUserId: userId,
+          receiverUserId: input.id,
+          message: '"Followed you"',
         });
-
-        if (!transactionResult) {
-          throw new TRPCError({ code: "NOT_IMPLEMENTED" });
-        }
-
         return { followUser: true };
       } else {
-        const transactionResult = await ctx.db.$transaction(async (prisma) => {
-          const unfollowUser = await prisma.user.update({
-            where: { id: userId },
-            data: {
-              following: {
-                disconnect: {
-                  id: input.id,
-                },
-              },
-            },
-          });
-
-          const notification = await prisma.notification.findFirst({
-            where: {
-              senderUserId: userId,
-              receiverUserId: input.id,
-              type: "FOLLOW",
-            },
-            select: {
-              id: true,
-            },
-          });
-
-          if (notification) {
-            await prisma.notification.delete({
-              where: {
-                id: notification.id,
-              },
-            });
-          }
-
-          return {
-            unfollowUser,
-          };
-        });
-
-        if (!transactionResult) {
-          throw new TRPCError({ code: "NOT_IMPLEMENTED" });
+        await deleteFollow(userId, input.id);
+        const notification = await findNotification(userId, input.id, "FOLLOW");
+        if (notification) {
+          await deleteNotification(notification.$id);
         }
-
         return { unFollowUser: false };
       }
     }),

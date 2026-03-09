@@ -3,11 +3,11 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useSignIn } from "@clerk/nextjs";
+import { loginWithEmail } from "@/lib/appwrite/auth-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
-import { catchClerkError, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { authSchema } from "@/lib/validations/auth";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Icons } from "@/components/icons";
@@ -18,7 +18,6 @@ export default function LoginForm() {
   const router = useRouter();
   type Inputs = z.infer<typeof authSchema>;
 
-  const { isLoaded, signIn, setActive } = useSignIn();
   const [isPending, startTransition] = React.useTransition();
 
   // react-hook-form
@@ -31,17 +30,11 @@ export default function LoginForm() {
   });
 
   function onSubmit(data: Inputs) {
-    if (!isLoaded) return;
-
     startTransition(async () => {
       try {
-        const result = await signIn.create({
-          identifier: data.identifier,
-          password: data.password,
-        });
+        const result = await loginWithEmail(data.identifier, data.password);
 
-        if (result.status === "complete") {
-          await setActive({ session: result.createdSessionId });
+        if (result.success) {
           router.push(`${window.location.origin}/`);
         } else {
           toast.error(
@@ -49,7 +42,9 @@ export default function LoginForm() {
           );
         }
       } catch (err) {
-        catchClerkError(err);
+        const message =
+          err instanceof Error ? err.message : "Something went wrong, please try again later.";
+        toast.error(message);
       }
     });
   }

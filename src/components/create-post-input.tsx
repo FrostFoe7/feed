@@ -8,7 +8,7 @@ import Username from "@/components/user/user-username";
 import { ResizeTextarea } from "@/components/ui/resize-textarea";
 import { cn } from "@/lib/utils";
 import UserAvatar from "@/components/user/user-avatar";
-import { useUser } from "@clerk/nextjs";
+import { useUser } from "@/components/providers/auth-provider";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import type { ParentPostInfo } from "@/types";

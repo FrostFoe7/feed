@@ -1,27 +1,20 @@
 "use client";
 
 import React from "react";
-import { useSignIn } from "@clerk/nextjs";
+import { loginWithGoogle } from "@/lib/appwrite/auth-actions";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
-import { catchClerkError } from "@/lib/utils";
 
 const OAuthLogin: React.FC = ({}) => {
   const [isLoading, setIsLoading] = React.useState<boolean | null>(null);
-  const { signIn, isLoaded: signInLoaded } = useSignIn();
 
   async function oauthSignIn() {
-    if (!signInLoaded) return null;
     try {
       setIsLoading(true);
-      await signIn.authenticateWithRedirect({
-        strategy: "oauth_google",
-        redirectUrl: "/sso-callback",
-        redirectUrlComplete: "/",
-      });
+      await loginWithGoogle();
     } catch (error) {
       setIsLoading(false);
-      catchClerkError(error);
+      console.error("OAuth login error:", error);
     }
   }
   return (

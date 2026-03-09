@@ -3,7 +3,7 @@
 import React from "react";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
-import { useUser } from "@clerk/nextjs";
+import { useUser } from "@/components/providers/auth-provider";
 import type { PostCardProps } from "@/types";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";

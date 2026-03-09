@@ -4,8 +4,8 @@ import { Inter } from "next/font/google";
 import { headers } from "next/headers";
 import { TRPCReactProvider } from "@/trpc/react";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { AppWriteAuthProvider } from "@/components/providers/auth-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Suspense } from "react";
 import FullscreenImageView from "@/components/fullscreen-image-view";
 import Loading from "@/app/(pages)/loading";
@@ -26,13 +26,12 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   keywords: [
     "nextjs",
-    "prisma",
+    "appwrite",
     "tRPC",
     "sujjeee",
     "threads",
     "threads-clone",
     "t3-stack",
-    "uploadthing",
     "shadcn ui",
   ],
   authors: [
@@ -76,10 +75,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={`font-sans no-scrollbar ${inter.variable}`}>
-          <TRPCReactProvider headers={headers()}>
+    <html lang="en">
+      <body className={`font-sans no-scrollbar ${inter.variable}`}>
+        <TRPCReactProvider headers={headers()}>
+          <AppWriteAuthProvider>
             <ThemeProvider
               attribute="class"
               defaultTheme="dark"
@@ -92,9 +91,9 @@ export default function RootLayout({
                 <FullscreenImageView />
               </Suspense>
             </ThemeProvider>
-          </TRPCReactProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+          </AppWriteAuthProvider>
+        </TRPCReactProvider>
+      </body>
+    </html>
   );
 }

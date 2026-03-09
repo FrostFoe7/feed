@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import type { NotificationType } from "@prisma/client";
+type NotificationType = "ADMIN" | "LIKE" | "REPLY" | "FOLLOW" | "REPOST" | "QUOTE";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";

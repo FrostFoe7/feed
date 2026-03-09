@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import CreatePostCard from "@/components/cards/create-post-card";
-import { useUser } from "@clerk/nextjs";
+import { useUser } from "@/components/providers/auth-provider";
 
 export default function Navigation() {
   const { user } = useUser();

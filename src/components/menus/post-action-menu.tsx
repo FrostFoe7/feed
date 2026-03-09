@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
+import { useUser } from "@/components/providers/auth-provider";
 import AreYouSure from "@/components/cards/confirmation-card";
 
 interface PostActionMenuProps {

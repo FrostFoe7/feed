@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
+import { useUser } from "@/components/providers/auth-provider";
 import type { PostReplyCardProps } from "@/types";
 import Username from "@/components/user/user-username";
 import PostActionMenu from "@/components/menus/post-action-menu";

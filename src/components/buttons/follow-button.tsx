@@ -6,7 +6,7 @@ import { api } from "@/trpc/react";
 import { toast } from "sonner";
 import { usePathname } from "next/navigation";
 import type { AuthorInfoProps } from "@/types";
-import { useUser } from "@clerk/nextjs";
+import { useUser } from "@/components/providers/auth-provider";
 import { cn } from "@/lib/utils";
 
 interface FollowButtonProps extends React.HTMLAttributes<HTMLDivElement> {

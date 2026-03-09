@@ -1,7 +1,7 @@
 import Banner from "@/components/threads-banner";
 import SiteFooter from "@/components/layouts/site-footer";
 import QRcode from "@/components/qr-code";
-import { currentUser } from "@clerk/nextjs";
+import { getLoggedInUser } from "@/lib/appwrite/session";
 import { redirect } from "next/navigation";
 
 interface AuthLayoutProps {
@@ -9,7 +9,7 @@ interface AuthLayoutProps {
 }
 
 export default async function AuthLayout({ children }: AuthLayoutProps) {
-  const user = await currentUser();
+  const user = await getLoggedInUser();
   if (user) redirect("/");
 
   return (

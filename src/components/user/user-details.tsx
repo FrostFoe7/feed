@@ -8,7 +8,7 @@ import { cn, formatURL } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import type { UserProfileInfoProps } from "@/types";
 import { Button } from "@/components/ui/button";
-import { useUser } from "@clerk/nextjs";
+import { useUser } from "@/components/providers/auth-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import UserFollowers from "@/components/user/user-followers";
 import FollowButton from "@/components/buttons/follow-button";

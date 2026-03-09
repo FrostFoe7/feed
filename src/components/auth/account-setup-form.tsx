@@ -13,9 +13,7 @@ import { Icons } from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ResizeTextarea } from "@/components/ui/resize-textarea";
-import { Privacy } from "@prisma/client";
-import type { User } from "@prisma/client";
-import { useUser } from "@clerk/nextjs";
+import { useUser } from "@/components/providers/auth-provider";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,7 +25,14 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 
-type UserSetupProps = Pick<User, "bio" | "link" | "privacy" | "username">;
+type Privacy = "PUBLIC" | "PRIVATE";
+
+type UserSetupProps = {
+  bio: string | null;
+  link: string | null;
+  privacy: Privacy;
+  username: string;
+};
 
 export default function AccountSetupForm({ username }: { username: string }) {
   const { user } = useUser();
@@ -38,7 +43,7 @@ export default function AccountSetupForm({ username }: { username: string }) {
   const [userAccountData, setUserAccountData] = React.useState<UserSetupProps>({
     bio: "",
     link: "",
-    privacy: Privacy.PUBLIC,
+    privacy: "PUBLIC",
     username: username,
   });
 
@@ -231,7 +236,7 @@ export default function AccountSetupForm({ username }: { username: string }) {
                 onClick={() =>
                   setUserAccountData({
                     ...userAccountData,
-                    privacy: Privacy.PUBLIC,
+                    privacy: "PUBLIC" as Privacy,
                   })
                 }
               >
@@ -259,7 +264,7 @@ export default function AccountSetupForm({ username }: { username: string }) {
                 onClick={() =>
                   setUserAccountData({
                     ...userAccountData,
-                    privacy: Privacy.PRIVATE,
+                    privacy: "PRIVATE" as Privacy,
                   })
                 }
               >

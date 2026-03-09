@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useClerk } from "@clerk/nextjs";
+import { logout } from "@/lib/appwrite/auth-actions";
 import { Icons } from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -16,7 +16,11 @@ import {
 export default function NavigationMenu() {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
-  const { signOut } = useClerk();
+
+  async function handleSignOut() {
+    await logout();
+    router.push("/login");
+  }
 
   return (
     <>
@@ -48,7 +52,7 @@ export default function NavigationMenu() {
           <DropdownMenuItem className="focus:bg-transparent px-4 tracking-normal select-none font-semibold py-3 cursor-pointer text-[15px]  active:bg-primary-foreground rounded-none">
             <div
               aria-label="Log out"
-              onClick={() => signOut(() => router.push("/"))}
+              onClick={() => void handleSignOut()}
             >
               Log out
             </div>
