@@ -23,45 +23,6 @@ export type ParentPostInfo = Pick<
   "id" | "text" | "images" | "author"
 >;
 
-export type ParentPostsProps = {
-  id: string;
-  createdAt: string;
-  text: string;
-  images: string[];
-  likes: {
-    userId: string;
-  }[];
-  quoteId: string | null;
-  reposts: {
-    userId: string;
-    postId: string;
-  }[];
-  parentPostId: string | null;
-  replies: {
-    author: {
-      username: string;
-      id: string;
-      image: string;
-    };
-  }[];
-  author: {
-    id: string;
-    image: string;
-    fullname: string;
-    username: string;
-    bio: string;
-    link: string;
-    createdAt: Date;
-    isAdmin: boolean;
-    followers: {
-      id: string;
-      image: string;
-    }[];
-  };
-  like_count: number;
-  reply_count: number;
-};
-
 export type TriggerVariant = "create" | "reply" | "quote" | "home";
 
 export interface TriggerProps {

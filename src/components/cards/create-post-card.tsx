@@ -154,7 +154,7 @@ const CreatePostCard: React.FC = ({}) => {
               Posted
             </div>
             <Link
-              href={`/${data?.createPost.author.username}/post/${data?.createPost.id}`}
+              href={`/@${data?.createPost.author.username}/post/${data?.createPost.id}`}
               className="hover:text-blue-900"
             >
               View

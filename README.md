@@ -15,25 +15,22 @@ This is an open source **threads-clone** build with **_`create-t3-app`_** and ev
 - **Framework:** [Next.js](https://nextjs.org)
 - **Language:** [Typescript](https://www.typescriptlang.org/docs/)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com)
-- **User Management:** [Clerk](https://clerk.com)
-- **ORM:** [Prisma ORM](https://www.prisma.io/)
+- **Backend:** [AppWrite](https://appwrite.io) (Auth, Database, Storage)
 - **UI Components:** [shadcn/ui](https://ui.shadcn.com)
-- **File Uploads:** [uploadthing](https://uploadthing.com)
 - **Typesafe APIs:** [tRPC](https://trpc.io)
 - **Hosting:** [Vercel](https://vercel.com/)
 
 ## Key Features
 
-- Authentication with **Clerk**
-- File uploads with **uploadthing**
-- Advance **Prisma ORM** concepts
-- Database on **Neon**
+- Authentication with **AppWrite** (Email/Password + Google OAuth)
+- File uploads with **AppWrite Storage**
+- Document-based database with **AppWrite**
 - Validation with **Zod**
 - Text filteration with **bad-words**
 - Image filteration with **nsfw-filter**
 - Custom notifications on user interactions
 - Custom component on top of **shadcn/ui**
-- Recursive threads with **prisma.$queryRaw**
+- Recursive thread chains
 - **_...and many more !_**
 
 ## Running Locally
@@ -62,8 +59,7 @@ This is an open source **threads-clone** build with **_`create-t3-app`_** and ev
    pnpm run dev
    ```
 
-5. Push the database schema
+5. Set up AppWrite
 
-   ```bash
-   pnpm run db:push
-   ```
+   Create an AppWrite project at [cloud.appwrite.io](https://cloud.appwrite.io) and configure
+   the database collections, storage bucket, and API keys as described in `.env.example`.

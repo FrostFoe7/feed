@@ -6,7 +6,8 @@
     "build": "next build",
     "lint": "eslint .",
     "dev": "next dev",
-    "start": "next start"
+    "start": "next start",
+    "setup:appwrite": "tsx scripts/setup-appwrite.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^10.3.0",
@@ -67,6 +68,7 @@
     "globals": "^15.15.0",
     "postcss": "^8.5.8",
     "tailwindcss": "^4.2.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1"
   },

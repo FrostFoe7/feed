@@ -23,12 +23,17 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "uploadthing.com",
+        hostname: "cloud.appwrite.io",
         pathname: "**",
       },
       {
         protocol: "https",
-        hostname: "utfs.io",
+        hostname: "*.appwrite.io",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
         pathname: "**",
       },
     ],

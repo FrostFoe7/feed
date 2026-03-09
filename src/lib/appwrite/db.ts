@@ -370,13 +370,11 @@ export async function getInfinitePosts(
   return result.documents as unknown as AppWritePost[];
 }
 
-export async function getUserPosts(username: string, parentOnly = true) {
+export async function getUserPosts(userId: string, parentOnly = true) {
   const { databases } = createAdminClient();
-  const userDoc = await getUserByUsername(username);
-  if (!userDoc) return null;
 
   const queries: string[] = [
-    Query.equal("authorId", userDoc.$id),
+    Query.equal("authorId", userId),
     Query.orderDesc("$createdAt"),
     Query.limit(50),
   ];
@@ -525,15 +523,12 @@ export async function deleteRepost(postId: string, userId: string) {
   }
 }
 
-export async function getUserReposts(username: string) {
-  const userDoc = await getUserByUsername(username);
-  if (!userDoc) return null;
-
+export async function getUserReposts(userId: string) {
   const { databases } = createAdminClient();
   const result = await databases.listDocuments(
     DATABASE_ID,
     COLLECTIONS.REPOSTS,
-    [Query.equal("userId", userDoc.$id), Query.orderDesc("$createdAt"), Query.limit(50)],
+    [Query.equal("userId", userId), Query.orderDesc("$createdAt"), Query.limit(50)],
   );
 
   const reposts = result.documents as unknown as AppWriteRepost[];

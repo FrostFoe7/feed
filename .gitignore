@@ -8,9 +8,9 @@
 # testing
 /coverage
 
-# database
-/prisma/db.sqlite
-/prisma/db.sqlite-journal
+# env files
+.env
+.env.local
 
 # next.js
 /.next/
