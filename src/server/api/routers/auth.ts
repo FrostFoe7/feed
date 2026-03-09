@@ -7,7 +7,6 @@ import {
   createUser,
   createNotification,
 } from "@/lib/appwrite/db";
-import { env } from "@/env.mjs";
 
 export const authRouter = createTRPCRouter({
   accountSetup: privateProcedure
@@ -44,11 +43,11 @@ export const authRouter = createTRPCRouter({
         });
 
         // Send welcome notification
-        if (env.ADMIN_USER_ID) {
+        if (process.env.ADMIN_USER_ID) {
           await createNotification({
             isPublic: false,
             type: "ADMIN",
-            senderUserId: env.ADMIN_USER_ID,
+            senderUserId: process.env.ADMIN_USER_ID,
             receiverUserId: userId,
             message: `Hey ${fullname}! Welcome to Threads. I hope you like this project. If so, please make sure to give it a star on GitHub and share your views on Twitter. Thanks.`,
           });

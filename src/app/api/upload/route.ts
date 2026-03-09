@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSessionClient } from "@/lib/appwrite/server";
 import { ID } from "node-appwrite";
 import { STORAGE_BUCKET_ID } from "@/lib/appwrite/config";
-import { env } from "@/env.mjs";
 
 export async function POST(req: NextRequest) {
   // Authenticate
@@ -53,7 +52,7 @@ export async function POST(req: NextRequest) {
 
     await storage.createFile(STORAGE_BUCKET_ID, fileId, inputFile);
 
-    const fileUrl = `${env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${STORAGE_BUCKET_ID}/files/${fileId}/view?project=${env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
+    const fileUrl = `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${STORAGE_BUCKET_ID}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
 
     return NextResponse.json({ url: fileUrl, fileId });
   } catch (error) {

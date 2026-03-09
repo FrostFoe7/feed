@@ -1,13 +1,12 @@
 import "server-only";
 
 import { Client, Account, Databases, Storage, Users, ID, Query } from "node-appwrite";
-import { env } from "@/env.mjs";
 
 export function createAdminClient() {
   const client = new Client()
-    .setEndpoint(env.NEXT_PUBLIC_APPWRITE_ENDPOINT)
-    .setProject(env.NEXT_PUBLIC_APPWRITE_PROJECT_ID)
-    .setKey(env.APPWRITE_API_KEY);
+    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
+    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!)
+    .setKey(process.env.APPWRITE_API_KEY!);
 
   return {
     get account() {
@@ -27,8 +26,8 @@ export function createAdminClient() {
 
 export function createSessionClient(session: string) {
   const client = new Client()
-    .setEndpoint(env.NEXT_PUBLIC_APPWRITE_ENDPOINT)
-    .setProject(env.NEXT_PUBLIC_APPWRITE_PROJECT_ID)
+    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
+    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!)
     .setSession(session);
 
   return {

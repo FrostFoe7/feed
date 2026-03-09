@@ -2,7 +2,6 @@ import "server-only";
 
 import { createAdminClient, ID, Query } from "./server";
 import { DATABASE_ID, COLLECTIONS, STORAGE_BUCKET_ID } from "./config";
-import { env } from "@/env.mjs";
 
 // ─── Types ────────────────────────────────────────────────────
 
@@ -640,11 +639,11 @@ export async function uploadFile(file: File) {
 }
 
 export function getFilePreviewUrl(fileId: string) {
-  return `${env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${STORAGE_BUCKET_ID}/files/${fileId}/view?project=${env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
+  return `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${STORAGE_BUCKET_ID}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
 }
 
 export function getFileUrl(fileId: string) {
-  return `${env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${STORAGE_BUCKET_ID}/files/${fileId}/view?project=${env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
+  return `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${STORAGE_BUCKET_ID}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
 }
 
 // ─── Helper: Enrich posts with author, likes, replies, reposts ─
