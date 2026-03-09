@@ -146,13 +146,13 @@ export default function AccountSetupForm({ username }: { username: string }) {
                                                 <Label htmlFor="username">Name</Label>
                                                 <div className=" flex items-center gap-2  w-full my-1 h-7">
                                                     <Lock className="h-4 w-4 text-[#4D4D4D]" />
-                                                    <div className="flex-grow overflow-hidden outline-none text-[15px] text-accent-foreground break-words tracking-wide w-full select-none"
+                                                    <div className="grow overflow-hidden outline-hidden text-[15px] text-accent-foreground wrap-break-word tracking-wide w-full select-none"
                                                     >
                                                         {`${getFullName(user?.firstName ?? '', user?.lastName ?? '')} ${"(" + userAccountData?.username + ")"}`}
                                                     </div>
                                                 </div>
                                             </div>
-                                            <Avatar className="rounded-full outline outline-1 outline-border h-12 w-12 ">
+                                            <Avatar className="rounded-full outline-solid outline-1 outline-border h-12 w-12 ">
                                                 <AvatarImage
                                                     src={user?.imageUrl}
                                                     alt={user?.username ?? ''}
@@ -186,7 +186,7 @@ export default function AccountSetupForm({ username }: { username: string }) {
                                                             <Input
                                                                 maxLength={50}
                                                                 type='url'
-                                                                className="outline-none border-0  ring-0  focus-visible:ring-offset-0 resize-none min-h-min focus-visible:ring-0 p-0 bg-transparent rounded-none placeholder:text-[#777777] text-[15px] text-accent-foreground select-none whitespace-break-spaces"
+                                                                className="outline-hidden border-0  ring-0  focus-visible:ring-offset-0 resize-none min-h-min focus-visible:ring-0 p-0 bg-transparent rounded-none placeholder:text-[#777777] text-[15px] text-accent-foreground select-none whitespace-break-spaces"
                                                                 placeholder="Add link"
                                                                 {...field}
                                                             />

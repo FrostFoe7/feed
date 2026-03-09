@@ -136,7 +136,7 @@ export function MagneticCursor() {
       gsap.set(cursorRef.current, { x: p.cx, y: p.cy })
     })
   })
-  return <div ref={cursorRef} className="fixed w-10 h-10 border border-white rounded-full pointer-events-none mix-blend-difference z-[9999] -translate-x-1/2 -translate-y-1/2" />
+  return <div ref={cursorRef} className="fixed w-10 h-10 border border-white rounded-full pointer-events-none mix-blend-difference z-9999 -translate-x-1/2 -translate-y-1/2" />
 }
 ```
 

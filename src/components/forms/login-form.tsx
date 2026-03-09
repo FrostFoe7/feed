@@ -78,7 +78,7 @@ export default function LoginForm() {
                                     <FormControl>
                                         <Input
                                             autoFocus
-                                            className={cn('h-14 rounded-xl bg-[#1e1e1e] text-[15px] placeholder:text-[#777777] font-medium tracking-normal outline-none ring-0  focus-visible:ring-offset-0 min-h-min border-none focus-visible:ring-1 focus-visible:ring-[#393939] dark:focus-visible:ring-[#393939] px-4 text-white', {
+                                            className={cn('h-14 rounded-xl bg-[#1e1e1e] text-[15px] placeholder:text-[#777777] font-medium tracking-normal outline-hidden ring-0  focus-visible:ring-offset-0 min-h-min border-none focus-visible:ring-1 focus-visible:ring-[#393939] dark:focus-visible:ring-[#393939] px-4 text-white', {
                                                 "focus-visible:ring-red-700 placeholder:text-red-700 dark:focus-visible:ring-red-700": error
                                             })}
                                             placeholder={error ? error.message : 'Username, phone or email'}
@@ -99,7 +99,7 @@ export default function LoginForm() {
                                 <FormItem>
                                     <FormControl>
                                         <Input
-                                            className={cn('h-14 rounded-xl bg-[#1e1e1e]  text-[15px] placeholder:text-[#777777] font-medium  tracking-normal outline-none ring-0  focus-visible:ring-offset-0 min-h-min border-none focus-visible:ring-1 focus-visible:ring-[#393939] px-4 dark:focus-visible:ring-[#393939] text-white', {
+                                            className={cn('h-14 rounded-xl bg-[#1e1e1e]  text-[15px] placeholder:text-[#777777] font-medium  tracking-normal outline-hidden ring-0  focus-visible:ring-offset-0 min-h-min border-none focus-visible:ring-1 focus-visible:ring-[#393939] px-4 dark:focus-visible:ring-[#393939] text-white', {
                                                 "focus-visible:ring-red-700 placeholder:text-red-700 dark:focus-visible:ring-red-700": error
                                             })}
                                             placeholder={error ? error.message : "Password"}

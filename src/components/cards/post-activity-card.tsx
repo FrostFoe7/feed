@@ -51,7 +51,7 @@ const PostActivityCard: React.FC<PostActivityCardProps> = ({ likeCount, id, text
                             </Avatar>
                             <Username author={author} />
                         </div>
-                        <div className='flex-grow resize-none overflow-hidden outline-none text-[15px] text-accent-foreground break-words placeholder:text-[#777777] w-full tracking-normal whitespace-pre-line truncate'>
+                        <div className='grow resize-none overflow-hidden outline-hidden text-[15px] text-accent-foreground wrap-break-word placeholder:text-[#777777] w-full tracking-normal whitespace-pre-line truncate'>
                             <div dangerouslySetInnerHTML={{
                                 __html: text.slice(1, -1).replace(/\\n/g, '\n')
                             }} />
@@ -139,7 +139,7 @@ const DisplayInsight: React.FC<DisplayInsightProps> = ({ id }) => {
             {data?.likes.map((userData, index) => (
                 <div key={index} className='flex items-center w-full '>
                     <button className='relative ml-4 mr-3'>
-                        <div className='h-9 w-9 outline outline-1 outline-[#333333] rounded-full'>
+                        <div className='h-9 w-9 outline-solid outline-1 outline-[#333333] rounded-full'>
                             <Avatar className="rounded-full w-full h-full">
                                 <AvatarImage
                                     src={userData.user.image ?? ''}

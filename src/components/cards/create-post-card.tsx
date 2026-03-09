@@ -181,7 +181,7 @@ const CreatePostCard: React.FC = ({}) => {
       <DialogTrigger>
         <CreateButton />
       </DialogTrigger>
-      <DialogContent className="w-full max-w-lg select-none border-none bg-transparent shadow-none outline-none sm:max-w-[668px]">
+      <DialogContent className="w-full max-w-lg select-none border-none bg-transparent shadow-none outline-hidden sm:max-w-[668px]">
         <h1 className="mb-2 w-full text-center font-bold text-white">
           {replyPostInfo ? <>Reply</> : <>New thread</>}
         </h1>

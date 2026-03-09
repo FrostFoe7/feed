@@ -451,7 +451,7 @@ function HorizontalScroll() {
     <div ref={containerRef}>
       <div ref={wrapperRef} className="flex w-[400vw]">
         {[1, 2, 3, 4].map(i => (
-          <div key={i} className="panel w-screen h-screen flex-shrink-0">
+          <div key={i} className="panel w-screen h-screen shrink-0">
             Panel {i}
           </div>
         ))}

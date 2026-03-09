@@ -27,7 +27,7 @@ const UserActionCard: React.FC<UserCardProps> = ({
         <div className='flex flex-col w-full'>
             <div className='flex w-full mt-5'>
                 <Link href={`/@${username}`} >
-                    <Avatar className="h-10 w-10 relative overflow-visible cursor-pointer outline outline-1 outline-border ">
+                    <Avatar className="h-10 w-10 relative overflow-visible cursor-pointer outline-solid outline-1 outline-border ">
                         <AvatarImage src={image ?? ''} alt={fullname ?? ''} className='rounded-full object-cover' />
                         <AvatarFallback>{username.slice(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>

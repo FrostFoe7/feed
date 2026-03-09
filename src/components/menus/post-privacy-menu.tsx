@@ -26,11 +26,11 @@ const PostPrivacyMenu: React.FC = ({ }) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className='text-[15px] text-[#777777] tracking-normal z-50 cursor-pointer select-none outline-none'>
+                <button className='text-[15px] text-[#777777] tracking-normal z-50 cursor-pointer select-none outline-hidden'>
                     {privacyDisplayText}
                 </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className=' bg-background shadow-2xl dark:bg-[#181818] rounded-2xl w-[190px] mt-1 z-[1000] p-0'>
+            <DropdownMenuContent align="start" className=' bg-background shadow-2xl dark:bg-[#181818] rounded-2xl w-[190px] mt-1 z-1000 p-0'>
                 <DropdownMenuItem
                     className='focus:bg-transparent px-4 tracking-normal  select-none font-semibold py-3 cursor-pointer text-[15px] rounded-none active:bg-primary-foreground'
                     onClick={() => setPostPrivacy('ANYONE')}

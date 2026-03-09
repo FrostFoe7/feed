@@ -24,9 +24,9 @@ export default function SearchContainer() {
 
     return (
         <>
-            {searchValue !== '' && <div className="fixed inset-0 z-[50] bg-background/70 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />}
+            {searchValue !== '' && <div className="fixed inset-0 z-50 bg-background/70 backdrop-blur-xs data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />}
 
-            <div className={cn('absolute rounded-2xl  border border-border bg-primary-foreground  max-w-xl w-full mb-3 transition-transform duration-300 z-[80]', {
+            <div className={cn('absolute rounded-2xl  border border-border bg-primary-foreground  max-w-xl w-full mb-3 transition-transform duration-300 z-80', {
                 'scale-105 bg-background dark:bg-primary-foreground': searchValue !== '',
                 'scale-100': searchValue === '',
             })}>
@@ -34,7 +34,7 @@ export default function SearchContainer() {
                     <Icons.search className="h-4 w-4 text-[#4D4D4D] absolute left-6 -translate-y-2/4 top-2/4 " />
                     <input
                         value={searchValue}
-                        className="resize-none text-base bg-transparent w-full placeholder:text-[#777777] outline-none placeholder:text-[15px]"
+                        className="resize-none text-base bg-transparent w-full placeholder:text-[#777777] outline-hidden placeholder:text-[15px]"
                         placeholder="Search"
                         onChange={(e) => setSearchValue(e.target.value)}
                     />
@@ -91,7 +91,7 @@ const DisplaySearchedResults: React.FC<DisplaySearchedResultsProps> = ({ debounc
             {data?.map((user, index) => (
                 <div key={index} className='flex items-center w-full '>
                     <button className='mx-5 '>
-                        <div className='h-9 w-9 outline outline-1  outline-border rounded-full'>
+                        <div className='h-9 w-9 outline-solid outline-1  outline-border rounded-full'>
                             <Avatar className="rounded-full w-full h-full">
                                 <AvatarImage src={user.image ?? ""} alt={user.fullname ?? ''} />
                                 <AvatarFallback>OG</AvatarFallback>

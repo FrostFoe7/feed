@@ -7,7 +7,7 @@ export default function RootLoading() {
 
     return (
         <div className="flex flex-col justify-between h-screen ">
-            <div className="flex-grow flex items-center justify-center ">
+            <div className="grow flex items-center justify-center ">
                 <Image
                     alt="Threads"
                     src={LogoImage}

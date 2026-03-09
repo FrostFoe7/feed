@@ -40,7 +40,7 @@ const UserProfile: React.FC<UserProfileInfoProps> = (props) => {
     const lastSegment = segments[segments.length - 1];
 
     return (
-        <div className=" z-[10] mt-4 flex w-full flex-col space-y-4">
+        <div className=" z-10 mt-4 flex w-full flex-col space-y-4">
             <div className="flex w-fullitems-center">
                 <div className="flex w-full flex-col p-3 pl-0 gap-1">
                     <h1 className="text-2xl font-bold tracking-normal">
@@ -53,7 +53,7 @@ const UserProfile: React.FC<UserProfileInfoProps> = (props) => {
                         <span className="ml-0.5 rounded-2xl bg-primary text-[#777777] text-xm px-1.5 py-1 text-[11px] font-medium">threads.net</span>
                     </div>
                 </div>
-                <Avatar className="h-[80px] w-[80px] overflow-visible outline outline-2 outline-border relative">
+                <Avatar className="h-[80px] w-[80px] overflow-visible outline-solid outline-2 outline-border relative">
                     <AvatarImage src={image ?? ""} alt={fullname ?? ''} className="h-min w-full rounded-full object-cover " />
                     <AvatarFallback></AvatarFallback>
                     {isAdmin &&

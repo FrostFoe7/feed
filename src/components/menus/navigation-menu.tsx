@@ -27,7 +27,7 @@ export default function NavigationMenu() {
                         <Icons.menu className='h-[22px] w-[22px] text-secondary transform transition-all duration-150 ease-out hover:scale-100 active:scale-90 cursor-pointer hover:text-foreground active:text-foreground' />
                     </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className='bg-background shadow-xl dark:bg-[#181818] z-[999] rounded-2xl w-[185px] mt-1 p-0'>
+                <DropdownMenuContent align="end" className='bg-background shadow-xl dark:bg-[#181818] z-999 rounded-2xl w-[185px] mt-1 p-0'>
                     <DropdownMenuItem
                         onClick={() => setTheme(theme === "light" ? "dark" : "light")}
                         className='focus:bg-transparent px-4 tracking-normal select-none font-semibold py-3 cursor-pointer text-[15px] active:bg-primary-foreground rounded-none'

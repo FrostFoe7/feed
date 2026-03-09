@@ -480,7 +480,7 @@ export function InteractiveGrid() {
       {Array.from({ length: 25 }).map((_, i) => (
         <div
           key={i}
-          className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded cursor-pointer"
+          className="w-12 h-12 bg-linear-to-br from-purple-500 to-pink-500 rounded cursor-pointer"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         />

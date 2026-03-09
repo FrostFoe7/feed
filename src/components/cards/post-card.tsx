@@ -70,7 +70,7 @@ const PostCard: React.FC<PostCardProps> = ({
                     <Dialog>
                         <DialogTrigger asChild>
                             <button className='relative '>
-                                <div className='h-9 w-9 outline outline-1 outline-border rounded-full ml-[1px]'>
+                                <div className='h-9 w-9 outline-solid outline-1 outline-border rounded-full ml-px'>
                                     <Avatar className="rounded-full w-full h-full ">
                                         <AvatarImage
                                             src={author.image ?? ''}
@@ -92,7 +92,7 @@ const PostCard: React.FC<PostCardProps> = ({
                     </Dialog>
 
                     {replyCount > 0 &&
-                        <div className="h-full w-0.5 bg-[#D8D8D8] dark:bg-[#313639]  rounded-full my-[1px]" />
+                        <div className="h-full w-0.5 bg-[#D8D8D8] dark:bg-[#313639]  rounded-full my-px" />
                     }
                 </div>
 

@@ -7,7 +7,7 @@ export default function NotFound() {
     return (
         <>
             <div className="flex flex-col justify-between h-[80vh] ">
-                <div className="flex-grow flex px-4 flex-col gap-4 items-center justify-center ">
+                <div className="grow flex px-4 flex-col gap-4 items-center justify-center ">
                     <h4 className="scroll-m-20 text-[16px] font-bold tracking-normal">
                         Sorry, this page isn&#39;t available
                     </h4>

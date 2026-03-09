@@ -20,7 +20,7 @@ const UserUsername: React.FC<UserUsernameProps> = ({ author }) => {
                 <Link
                     href={`/@${author.username}`}
                     className="flex items-center justify-center gap-1.5 cursor-pointer hover:underline w-fit">
-                    <h1 className="text-accent-foreground text-[15px] font-semibold leading-[0]">
+                    <h1 className="text-accent-foreground text-[15px] font-semibold leading-0">
                         {author.username}
                     </h1>
                     {author.isAdmin
@@ -31,7 +31,7 @@ const UserUsername: React.FC<UserUsernameProps> = ({ author }) => {
             <HoverCardContent
                 align={"start"}
                 sideOffset={10}
-                className="w-[360px] p-0 z-[99999] rounded-2xl bg-transparent border-none">
+                className="w-[360px] p-0 z-99999 rounded-2xl bg-transparent border-none">
                 <UserProfileCard {...author} />
             </HoverCardContent>
         </HoverCard>

@@ -106,7 +106,7 @@ const PostReplyCard: React.FC<PostReplyCardProps> = ({ postInfo, parentPosts }) 
                     <Dialog>
                         <DialogTrigger asChild>
                             <button className='relative '>
-                                <div className='h-9 w-9 outline outline-1 outline-border rounded-full ml-[1px]'>
+                                <div className='h-9 w-9 outline-solid outline-1 outline-border rounded-full ml-px'>
                                     <Avatar className="rounded-full w-full h-full ">
                                         <AvatarImage src={author.image ?? ''} alt={author.username} className='object-cover' />
                                         <AvatarFallback>{author.username?.slice(0, 2).toUpperCase()}</AvatarFallback>

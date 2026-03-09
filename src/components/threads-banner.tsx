@@ -8,7 +8,7 @@ import Image from 'next/image'
 export default function ThreadsBanner() {
     const { isMobile } = useWindow()
     return (
-        <header className="max-w-screen-md  md:max-w-screen-2xl lg:max-w-[1800px] mx-auto">
+        <header className="max-w-(--breakpoint-md)  md:max-w-(--breakpoint-2xl) lg:max-w-[1800px] mx-auto">
             {isMobile ?
                 <div className='flex justify-center items-center '>
                     <Icons.logo className='h-10 w-10 mb-6 sm:h-16 sm:w-16 mt-16' />

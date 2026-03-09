@@ -191,7 +191,7 @@ type OnlyNumbers = PickByType<Mixed, number>;
 **Basic Template Literal:**
 
 ```typescript
-type EventName = "click" | "focus" | "blur";
+type EventName = "click" | "focus" | "blur-sm";
 type EventHandler = `on${Capitalize<EventName>}`;
 // Type: "onClick" | "onFocus" | "onBlur"
 ```

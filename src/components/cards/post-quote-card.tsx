@@ -69,7 +69,7 @@ const RenderCard: React.FC<PostQuoteCardProps> = ({
                 </time>
             </div>
             {text &&
-                <span className='flex-grow resize-none overflow-hidden outline-none text-[15px] text-accent-foreground break-words placeholder:text-[#777777] w-full tracking-normal whitespace-pre-line truncate'>
+                <span className='grow resize-none overflow-hidden outline-hidden text-[15px] text-accent-foreground wrap-break-word placeholder:text-[#777777] w-full tracking-normal whitespace-pre-line truncate'>
                     <div dangerouslySetInnerHTML={{
                         __html: text.slice(1, -1).replace(/\\n/g, '\n')
                     }} />

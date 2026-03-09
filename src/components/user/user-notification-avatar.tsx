@@ -44,7 +44,7 @@ const UserNotificationAvtar: React.FC<UserNotificationAvtarProps> = ({
 
   return (
     <Link href={`/@${username}`} >
-      <div className='outline outline-1 outline-border rounded-full ml-[1px]'>
+      <div className='outline-solid outline-1 outline-border rounded-full ml-px'>
         <Avatar className="h-10 w-10 relative overflow-visible cursor-pointer ">
           <AvatarImage
             src={image}
