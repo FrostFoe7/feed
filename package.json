@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "build": "next build",
+        "lint": "eslint .",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "dev": "next dev",
     "postinstall": "prisma generate",
-    "lint": "next lint",
     "start": "next start",
     "db:update": "prisma db push && prisma generate"
   },
@@ -60,25 +60,21 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^16.1.6",
+    "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "^4.2.1",
     "@types/bad-words": "^3.0.3",
-    "@types/eslint": "^9.6.1",
     "@types/node": "^25.3.5",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "@typescript-eslint/eslint-plugin": "^8.56.1",
-    "@typescript-eslint/parser": "^8.56.1",
     "bad-words": "^4.0.0",
-    "eslint": "^9.17.0",
-    "eslint-config-next": "16.1.6",
-    "eslint-config-prettier": "^10.1.8",
+    "eslint": "^10.0.3",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^17.4.0",
     "postcss": "^8.5.8",
-    "prettier": "^3.8.1",
-    "prettier-plugin-tailwindcss": "^0.7.2",
     "prisma": "^7.4.2",
     "tailwindcss": "^4.2.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1"
   },
   "ct3aMetadata": {
     "initVersion": "7.22.0"

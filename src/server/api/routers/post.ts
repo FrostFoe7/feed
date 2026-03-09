@@ -3,22 +3,21 @@ import { TRPCError } from "@trpc/server";
 import {
   createTRPCRouter,
   privateProcedure,
-  publicProcedure
+  publicProcedure,
 } from "@/server/api/trpc";
 import { getUserEmail } from "@/lib/utils";
 import { PostPrivacy, Prisma } from "@prisma/client";
-import Filter from 'bad-words';
+import Filter from "bad-words";
 import {
   GET_USER,
   GET_COUNT,
   GET_REPOSTS,
   GET_REPLIES,
-  GET_LIKES
+  GET_LIKES,
 } from "@/server/constant";
 import type { ParentPostsProps } from "@/types";
 
 export const postRouter = createTRPCRouter({
-
   createPost: privateProcedure
     .input(
       z.object({
@@ -26,73 +25,70 @@ export const postRouter = createTRPCRouter({
           message: "Text must be at least 3 character",
         }),
         imageUrl: z.string().optional(),
-        privacy: z.nativeEnum(PostPrivacy).default('ANYONE'),
+        privacy: z.nativeEnum(PostPrivacy).default("ANYONE"),
         quoteId: z.string().optional(),
-        postAuthor: z.string().optional()
-      })
+        postAuthor: z.string().optional(),
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const { user, userId } = ctx;
-      const email = getUserEmail(user)
+      const email = getUserEmail(user);
       const dbUser = await ctx.db.user.findUnique({
         where: {
-          email: email
+          email: email,
         },
         select: {
-          verified: true
-        }
-      })
+          verified: true,
+        },
+      });
 
       if (!dbUser) {
-        throw new TRPCError({ code: 'NOT_FOUND' })
+        throw new TRPCError({ code: "NOT_FOUND" });
       }
 
-      const filter = new Filter()
-      const filteredText = filter.clean(input.text)
+      const filter = new Filter();
+      const filteredText = filter.clean(input.text);
 
       const transactionResult = await ctx.db.$transaction(async (prisma) => {
-
         const newpost = await ctx.db.post.create({
           data: {
             text: filteredText,
             authorId: userId,
             images: input.imageUrl ? [input.imageUrl] : [],
             privacy: input.privacy,
-            quoteId: input.quoteId
+            quoteId: input.quoteId,
           },
           select: {
             id: true,
-            author: true
-          }
-        })
+            author: true,
+          },
+        });
 
         if (input.postAuthor && userId !== input.postAuthor) {
           await prisma.notification.create({
             data: {
-              type: 'QUOTE',
+              type: "QUOTE",
               senderUserId: userId,
               receiverUserId: input.postAuthor,
               postId: newpost.id,
-              message: input.text
-            }
+              message: input.text,
+            },
           });
         }
 
         return {
           newpost,
         };
-
       });
 
       if (!transactionResult) {
-        throw new TRPCError({ code: 'NOT_IMPLEMENTED' })
+        throw new TRPCError({ code: "NOT_IMPLEMENTED" });
       }
 
       return {
         createPost: transactionResult.newpost,
-        success: true
-      }
-
+        success: true,
+      };
     }),
 
   getInfinitePost: publicProcedure
@@ -101,15 +97,15 @@ export const postRouter = createTRPCRouter({
         searchQuery: z.string().optional(),
         limit: z.number().optional(),
         cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
-      })
+      }),
     )
     .query(async ({ input: { limit = 10, cursor, searchQuery }, ctx }) => {
       const allPosts = await ctx.db.post.findMany({
         where: {
           text: {
-            contains: searchQuery
+            contains: searchQuery,
           },
-          parentPostId: null
+          parentPostId: null,
         },
         take: limit + 1,
         cursor: cursor ? { createdAt_id: cursor } : undefined,
@@ -124,12 +120,12 @@ export const postRouter = createTRPCRouter({
           author: {
             select: {
               ...GET_USER,
-            }
+            },
           },
           ...GET_LIKES,
           ...GET_REPLIES,
           ...GET_COUNT,
-          ...GET_REPOSTS
+          ...GET_REPOSTS,
         },
       });
 
@@ -157,7 +153,7 @@ export const postRouter = createTRPCRouter({
           replies: post.replies,
           quoteId: post.quoteId,
           images: post.images,
-          reposts: post.reposts
+          reposts: post.reposts,
         })),
         nextCursor,
       };
@@ -167,13 +163,12 @@ export const postRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .query(async ({ input, ctx }) => {
-
       const postInfo = await ctx.db.post.findUnique({
         where: {
-          id: input.id
+          id: input.id,
         },
         select: {
           id: true,
@@ -188,10 +183,10 @@ export const postRouter = createTRPCRouter({
               bio: true,
               _count: {
                 select: {
-                  followers: true
-                }
+                  followers: true,
+                },
               },
-            }
+            },
           },
           likes: {
             select: {
@@ -202,18 +197,18 @@ export const postRouter = createTRPCRouter({
                   fullname: true,
                   image: true,
                   bio: true,
-                  followers: true
-                }
-              }
-            }
+                  followers: true,
+                },
+              },
+            },
           },
           parentPost: {
             include: {
               likes: true,
               ...GET_COUNT,
               author: true,
-              parentPost: true
-            }
+              parentPost: true,
+            },
           },
           replies: {
             select: {
@@ -228,22 +223,21 @@ export const postRouter = createTRPCRouter({
                   bio: true,
                   _count: {
                     select: {
-                      followers: true
-                    }
+                      followers: true,
+                    },
                   },
-                }
+                },
               },
               ...GET_COUNT,
               ...GET_LIKES,
-            }
+            },
           },
           ...GET_COUNT,
-        }
+        },
       });
 
-
       if (!postInfo) {
-        throw new TRPCError({ code: 'NOT_FOUND' })
+        throw new TRPCError({ code: "NOT_FOUND" });
       }
 
       return {
@@ -256,9 +250,9 @@ export const postRouter = createTRPCRouter({
           user: postInfo.author,
           parentPost: postInfo.parentPost,
           likes: postInfo.likes,
-          replies: postInfo.replies
-        }
-      }
+          replies: postInfo.replies,
+        },
+      };
     }),
 
   replyToPost: privateProcedure
@@ -270,30 +264,29 @@ export const postRouter = createTRPCRouter({
           message: "Text must be at least 3 character",
         }),
         imageUrl: z.string().optional(),
-        privacy: z.nativeEnum(PostPrivacy)
-      })
+        privacy: z.nativeEnum(PostPrivacy),
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const { user, userId } = ctx;
-      const email = getUserEmail(user)
+      const email = getUserEmail(user);
       const dbUser = await ctx.db.user.findUnique({
         where: {
-          email: email
+          email: email,
         },
         select: {
-          verified: true
-        }
-      })
+          verified: true,
+        },
+      });
 
       if (!dbUser) {
-        throw new TRPCError({ code: 'NOT_FOUND' })
+        throw new TRPCError({ code: "NOT_FOUND" });
       }
 
-      const filter = new Filter()
-      const filteredText = filter.clean(input.text)
+      const filter = new Filter();
+      const filteredText = filter.clean(input.text);
 
       const transactionResult = await ctx.db.$transaction(async (prisma) => {
-
         const repliedPost = await prisma.post.create({
           data: {
             text: filteredText,
@@ -306,56 +299,54 @@ export const postRouter = createTRPCRouter({
             },
             parentPost: {
               connect: {
-                id: input.postId
-              }
+                id: input.postId,
+              },
             },
           },
           select: {
             id: true,
-            author: true
-          }
-        })
+            author: true,
+          },
+        });
 
         if (userId !== input.postAuthor) {
           await prisma.notification.create({
             data: {
-              type: 'REPLY',
+              type: "REPLY",
               senderUserId: userId,
               receiverUserId: input.postAuthor,
               postId: input.postId,
-              message: input.text
-            }
+              message: input.text,
+            },
           });
         }
 
         return {
           repliedPost,
         };
-
       });
 
       if (!transactionResult) {
-        throw new TRPCError({ code: 'NOT_IMPLEMENTED' })
+        throw new TRPCError({ code: "NOT_IMPLEMENTED" });
       }
 
       return {
         createPost: transactionResult.repliedPost,
-        success: true
-      }
-
+        success: true,
+      };
     }),
 
   getNestedPosts: publicProcedure
     .input(
       z.object({
-        id: z.string()
-      })
+        id: z.string(),
+      }),
     )
     .query(async ({ input, ctx }) => {
-      const { id } = input
+      const { id } = input;
       const getPosts = await ctx.db.post.findUnique({
         where: {
-          id
+          id,
         },
         select: {
           id: true,
@@ -366,8 +357,8 @@ export const postRouter = createTRPCRouter({
           parentPostId: true,
           author: {
             select: {
-              ...GET_USER
-            }
+              ...GET_USER,
+            },
           },
           ...GET_LIKES,
           replies: {
@@ -387,20 +378,20 @@ export const postRouter = createTRPCRouter({
                       id: true,
                       username: true,
                       image: true,
-                    }
-                  }
-                }
+                    },
+                  },
+                },
               },
               author: {
                 select: {
                   ...GET_USER,
-                }
+                },
               },
               ...GET_COUNT,
             },
           },
           quoteId: true,
-          ...GET_REPOSTS
+          ...GET_REPOSTS,
         },
       });
 
@@ -515,11 +506,11 @@ export const postRouter = createTRPCRouter({
           SELECT *
           FROM Posts_tree
           ORDER BY depth;
-        `
+        `,
       );
 
       if (!getPosts) {
-        throw new TRPCError({ code: 'NOT_FOUND' })
+        throw new TRPCError({ code: "NOT_FOUND" });
       }
 
       return {
@@ -548,7 +539,7 @@ export const postRouter = createTRPCRouter({
 
         // TODO: need to fix type here
         parentPosts: parentPosts
-          .filter(parent => parent.id !== id)
+          .filter((parent) => parent.id !== id)
           .map((parent) => {
             return {
               id: parent.id,
@@ -566,105 +557,100 @@ export const postRouter = createTRPCRouter({
               quoteId: parent.quoteId,
               reposts: parent.reposts,
             };
-          }).reverse()
-      }
+          })
+          .reverse(),
+      };
     }),
 
   toggleRepost: privateProcedure
-    .input(z.object({
-      id: z.string()
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
     .mutation(async ({ input: { id }, ctx }) => {
-
       const { userId } = ctx;
 
       const data = { postId: id, userId };
 
       const existingRepost = await ctx.db.repost.findUnique({
         where: {
-          postId_userId: data
+          postId_userId: data,
         },
       });
 
       if (existingRepost == null) {
-
         const transactionResult = await ctx.db.$transaction(async (prisma) => {
-
           const createdRepost = await prisma.repost.create({
             data,
             select: {
               post: {
                 select: {
                   text: true,
-                  authorId: true
-                }
-              }
-            }
+                  authorId: true,
+                },
+              },
+            },
           });
 
           const createNotification = await prisma.notification.create({
             data: {
-              type: 'REPOST',
+              type: "REPOST",
               postId: data.postId,
               message: createdRepost.post.text,
               senderUserId: userId,
-              receiverUserId: createdRepost.post.authorId
-            }
+              receiverUserId: createdRepost.post.authorId,
+            },
           });
 
           return {
             createdRepost,
-            createNotification
+            createNotification,
           };
-
         });
 
         if (!transactionResult) {
-          throw new TRPCError({ code: 'NOT_IMPLEMENTED' })
+          throw new TRPCError({ code: "NOT_IMPLEMENTED" });
         }
 
         return { createdRepost: true };
-
       } else {
         const transactionResult = await ctx.db.$transaction(async (prisma) => {
-
           const removeRepost = await prisma.repost.delete({
             where: {
-              postId_userId: data
-            }
+              postId_userId: data,
+            },
           });
 
           const notification = await prisma.notification.findFirst({
             where: {
               senderUserId: userId,
               postId: data.postId,
-              type: 'REPOST',
+              type: "REPOST",
             },
             select: {
-              id: true
-            }
+              id: true,
+            },
           });
 
           if (notification) {
             await prisma.notification.delete({
               where: {
-                id: notification.id
-              }
+                id: notification.id,
+              },
             });
           }
 
           return {
             removeRepost,
-          }
-
+          };
         });
 
         if (!transactionResult) {
-          throw new TRPCError({ code: 'NOT_IMPLEMENTED' })
+          throw new TRPCError({ code: "NOT_IMPLEMENTED" });
         }
 
         return { createdRepost: false };
-
       }
     }),
 
@@ -672,13 +658,12 @@ export const postRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .query(async ({ input, ctx }) => {
-
       const postInfo = await ctx.db.post.findUnique({
         where: {
-          id: input.id
+          id: input.id,
         },
         select: {
           id: true,
@@ -693,22 +678,21 @@ export const postRouter = createTRPCRouter({
                   id: true,
                   username: true,
                   image: true,
-                }
-              }
-            }
+                },
+              },
+            },
           },
           author: {
             select: {
               ...GET_USER,
-            }
+            },
           },
           ...GET_COUNT,
-        }
+        },
       });
 
-
       if (!postInfo) {
-        throw new TRPCError({ code: 'NOT_FOUND' })
+        throw new TRPCError({ code: "NOT_FOUND" });
       }
 
       return {
@@ -720,32 +704,32 @@ export const postRouter = createTRPCRouter({
           replyCount: postInfo._count.replies,
           user: postInfo.author,
           likes: postInfo.likes,
-          replies: postInfo.replies
-        }
-      }
+          replies: postInfo.replies,
+        },
+      };
     }),
 
   deletePost: privateProcedure
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
-      const { userId } = ctx
+      const { userId } = ctx;
       const transactionResult = await ctx.db.$transaction(async (prisma) => {
         const PostInfo = await prisma.post.delete({
           where: {
             id: input.id,
-            authorId: userId
+            authorId: userId,
           },
           select: {
-            id: true
-          }
+            id: true,
+          },
         });
 
         if (!PostInfo) {
-          throw new TRPCError({ code: 'NOT_FOUND' })
+          throw new TRPCError({ code: "NOT_FOUND" });
         }
 
         await prisma.post.updateMany({
@@ -754,21 +738,19 @@ export const postRouter = createTRPCRouter({
           },
           data: {
             quoteId: null,
-          }
-        })
+          },
+        });
 
-        return { success: true }
-      })
+        return { success: true };
+      });
 
       if (!transactionResult) {
-        throw new TRPCError({ code: 'NOT_IMPLEMENTED' })
+        throw new TRPCError({ code: "NOT_IMPLEMENTED" });
       }
 
-      return { success: true }
+      return { success: true };
     }),
 });
-
-
 
 // await ctx.prisma.post.updateMany({
 //   where: {
@@ -779,6 +761,3 @@ export const postRouter = createTRPCRouter({
 // });
 
 // return { success: true }
-
-
-

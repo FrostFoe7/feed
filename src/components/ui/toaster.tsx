@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Toaster as RadToaster } from "sonner"
+import { Toaster as RadToaster } from "sonner";
 
 export function Toaster() {
   return (
@@ -13,9 +13,9 @@ export function Toaster() {
           height: "fit-content",
           width: "max-content",
           fontWeight: 600,
-          fontSize: 15
+          fontSize: 15,
         },
       }}
     />
-  )
+  );
 }

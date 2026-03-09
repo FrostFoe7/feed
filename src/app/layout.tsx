@@ -18,7 +18,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://threads.codebustar.com'),
+  metadataBase: new URL("https://threads.codebustar.com"),
   title: {
     default: siteConfig.name,
     template: `%s • ${siteConfig.name}`,
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     "threads-clone",
     "t3-stack",
     "uploadthing",
-    "shadcn ui"
+    "shadcn ui",
   ],
   authors: [
     {
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
-}
+};
 
 export const viewport: Viewport = {
   colorScheme: "dark light",
@@ -68,7 +68,7 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: light)", color: "white" },
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
-}
+};
 
 export default function RootLayout({
   children,

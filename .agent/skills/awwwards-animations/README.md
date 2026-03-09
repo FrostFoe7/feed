@@ -11,16 +11,16 @@ A comprehensive Claude Code skill for creating **Awwwards/FWA-level web animatio
 
 ### What's Included
 
-| Category | Libraries | Patterns |
-|----------|-----------|----------|
-| Scroll Animations | GSAP + ScrollTrigger, Motion | Parallax, pin sections, horizontal scroll |
-| Smooth Scroll | Lenis + ReactLenis | GSAP integration, scroll-linked effects |
-| React Animations | Motion (Framer Motion) | useScroll, useTransform, AnimatePresence |
-| Lightweight Effects | Anime.js 4.0 | Timelines, stagger, SVG morphing |
-| Geometric Shapes | SVG, Canvas, Zdog, p5.js | Tetris-style, creative coding |
-| Audio Reactive | Tone.js, Web Audio API | Scroll audio, UI sounds, visualizers |
-| Physics 2D | Matter.js | Gravity, collisions, constraints |
-| 3D & WebGL | Three.js + GSAP | Shaders, canvas effects |
+| Category            | Libraries                    | Patterns                                  |
+| ------------------- | ---------------------------- | ----------------------------------------- |
+| Scroll Animations   | GSAP + ScrollTrigger, Motion | Parallax, pin sections, horizontal scroll |
+| Smooth Scroll       | Lenis + ReactLenis           | GSAP integration, scroll-linked effects   |
+| React Animations    | Motion (Framer Motion)       | useScroll, useTransform, AnimatePresence  |
+| Lightweight Effects | Anime.js 4.0                 | Timelines, stagger, SVG morphing          |
+| Geometric Shapes    | SVG, Canvas, Zdog, p5.js     | Tetris-style, creative coding             |
+| Audio Reactive      | Tone.js, Web Audio API       | Scroll audio, UI sounds, visualizers      |
+| Physics 2D          | Matter.js                    | Gravity, collisions, constraints          |
+| 3D & WebGL          | Three.js + GSAP              | Shaders, canvas effects                   |
 
 ## Installation
 
@@ -89,15 +89,15 @@ awwwards-animations/
 ### Lenis + GSAP ScrollTrigger (Critical Setup)
 
 ```tsx
-import { ReactLenis, useLenis } from 'lenis/react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { ReactLenis, useLenis } from "lenis/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Connect Lenis to ScrollTrigger
-const lenis = useLenis()
-lenis.on('scroll', ScrollTrigger.update)
-gsap.ticker.add((time) => lenis.raf(time * 1000))
-gsap.ticker.lagSmoothing(0)
+const lenis = useLenis();
+lenis.on("scroll", ScrollTrigger.update);
+gsap.ticker.add((time) => lenis.raf(time * 1000));
+gsap.ticker.lagSmoothing(0);
 ```
 
 ### Magnetic Button (Motion)
@@ -107,7 +107,7 @@ gsap.ticker.lagSmoothing(0)
   onMouseMove={handleMouse}
   onMouseLeave={() => setPosition({ x: 0, y: 0 })}
   animate={position}
-  transition={{ type: 'spring', stiffness: 150, damping: 15 }}
+  transition={{ type: "spring", stiffness: 150, damping: 15 }}
 >
   {children}
 </motion.button>
@@ -116,23 +116,23 @@ gsap.ticker.lagSmoothing(0)
 ### Physics + Audio Collision
 
 ```tsx
-Matter.Events.on(engine, 'collisionStart', async () => {
-  await Tone.start()
-  synth.triggerAttackRelease('C4', '16n')
-})
+Matter.Events.on(engine, "collisionStart", async () => {
+  await Tone.start();
+  synth.triggerAttackRelease("C4", "16n");
+});
 ```
 
 ## Libraries & Versions
 
-| Library | Version | Purpose |
-|---------|---------|---------|
-| GSAP | 3.12+ | Scroll animations, timelines |
-| @gsap/react | latest | useGSAP hook |
-| Lenis | 1.1+ | Smooth scroll |
-| Motion | latest | React animations |
-| Anime.js | 4.0+ | Lightweight animations |
-| Matter.js | 0.19+ | 2D physics |
-| Tone.js | 14+ | Audio synthesis |
+| Library     | Version | Purpose                      |
+| ----------- | ------- | ---------------------------- |
+| GSAP        | 3.12+   | Scroll animations, timelines |
+| @gsap/react | latest  | useGSAP hook                 |
+| Lenis       | 1.1+    | Smooth scroll                |
+| Motion      | latest  | React animations             |
+| Anime.js    | 4.0+    | Lightweight animations       |
+| Matter.js   | 0.19+   | 2D physics                   |
+| Tone.js     | 14+     | Audio synthesis              |
 
 ## Inspiration
 

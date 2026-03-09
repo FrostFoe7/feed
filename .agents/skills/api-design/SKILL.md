@@ -10,10 +10,10 @@ metadata:
   platforms: Claude, ChatGPT, Gemini
 ---
 
-
 # API Design
 
 ## When to use this skill
+
 - Designing new REST APIs
 - Creating GraphQL schemas
 - Refactoring API endpoints
@@ -24,6 +24,7 @@ metadata:
 ## Instructions
 
 ### Step 1: Define API requirements
+
 - Identify resources and entities
 - Define relationships between entities
 - Specify operations (CRUD, custom actions)
@@ -33,12 +34,14 @@ metadata:
 ### Step 2: Design REST API
 
 **Resource naming**:
+
 - Use nouns, not verbs: `/users` not `/getUsers`
 - Use plural names: `/users/{id}`
 - Nest resources logically: `/users/{id}/posts`
 - Keep URLs short and intuitive
 
 **HTTP methods**:
+
 - `GET`: Retrieve resources (idempotent)
 - `POST`: Create new resources
 - `PUT`: Replace entire resource
@@ -46,6 +49,7 @@ metadata:
 - `DELETE`: Remove resources (idempotent)
 
 **Response codes**:
+
 - `200 OK`: Success with response body
 - `201 Created`: Resource created successfully
 - `204 No Content`: Success with no response body
@@ -58,6 +62,7 @@ metadata:
 - `500 Internal Server Error`: Server error
 
 **Example REST endpoint**:
+
 ```
 GET    /api/v1/users           # List users
 GET    /api/v1/users/{id}      # Get user
@@ -70,6 +75,7 @@ DELETE /api/v1/users/{id}      # Delete user
 ### Step 3: Request/Response format
 
 **Request example**:
+
 ```json
 POST /api/v1/users
 Content-Type: application/json
@@ -82,6 +88,7 @@ Content-Type: application/json
 ```
 
 **Response example**:
+
 ```json
 HTTP/1.1 201 Created
 Content-Type: application/json
@@ -100,6 +107,7 @@ Location: /api/v1/users/123
 ### Step 4: Error handling
 
 **Error response format**:
+
 ```json
 {
   "error": {
@@ -118,11 +126,13 @@ Location: /api/v1/users/123
 ### Step 5: Pagination
 
 **Query parameters**:
+
 ```
 GET /api/v1/users?page=2&limit=20&sort=-created_at&filter=role:admin
 ```
 
 **Response with pagination**:
+
 ```json
 {
   "data": [...],
@@ -145,12 +155,14 @@ GET /api/v1/users?page=2&limit=20&sort=-created_at&filter=role:admin
 ### Step 6: Authentication
 
 **Options**:
+
 - JWT (JSON Web Tokens)
 - OAuth 2.0
 - API Keys
 - Session-based
 
 **Example with JWT**:
+
 ```
 GET /api/v1/users
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
@@ -159,12 +171,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ### Step 7: Versioning
 
 **URL versioning** (recommended):
+
 ```
 /api/v1/users
 /api/v2/users
 ```
 
 **Header versioning**:
+
 ```
 GET /api/users
 Accept: application/vnd.api+json; version=1
@@ -198,7 +212,7 @@ paths:
             type: integer
             default: 20
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
@@ -208,7 +222,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/User'
+                      $ref: "#/components/schemas/User"
     post:
       summary: Create user
       requestBody:
@@ -216,14 +230,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserCreate'
+              $ref: "#/components/schemas/UserCreate"
       responses:
-        '201':
+        "201":
           description: User created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
 components:
   schemas:
     User:
@@ -268,21 +282,25 @@ components:
 ## Common patterns
 
 **Filtering**:
+
 ```
 GET /api/v1/users?role=admin&status=active
 ```
 
 **Sorting**:
+
 ```
 GET /api/v1/users?sort=-created_at,name
 ```
 
 **Field selection**:
+
 ```
 GET /api/v1/users?fields=id,name,email
 ```
 
 **Batch operations**:
+
 ```
 POST /api/v1/users/batch
 {
@@ -328,7 +346,9 @@ type Mutation {
 ## Examples
 
 ### Example 1: Basic usage
+
 <!-- Add example content here -->
 
 ### Example 2: Advanced usage
+
 <!-- Add advanced example content here -->

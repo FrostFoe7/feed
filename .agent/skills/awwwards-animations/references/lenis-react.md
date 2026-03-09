@@ -3,6 +3,7 @@
 Complete Lenis smooth scroll integration for React/Next.js with GSAP ScrollTrigger.
 
 ## Table of Contents
+
 1. [Installation](#installation)
 2. [Basic Setup](#basic-setup)
 3. [GSAP Integration](#gsap-integration)
@@ -24,16 +25,16 @@ npm install lenis
 
 ```tsx
 // components/SmoothScroll.tsx
-'use client'
+"use client";
 
-import { ReactLenis } from 'lenis/react'
+import { ReactLenis } from "lenis/react";
 
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
   return (
     <ReactLenis root options={{ lerp: 0.1, duration: 1.2 }}>
       {children}
     </ReactLenis>
-  )
+  );
 }
 ```
 
@@ -41,16 +42,20 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
 
 ```tsx
 // app/layout.tsx
-import { SmoothScroll } from '@/components/SmoothScroll'
+import { SmoothScroll } from "@/components/SmoothScroll";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body>
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
-  )
+  );
 }
 ```
 
@@ -58,7 +63,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ```css
 /* globals.css */
-html.lenis, html.lenis body {
+html.lenis,
+html.lenis body {
   height: auto;
 }
 
@@ -85,39 +91,39 @@ html.lenis, html.lenis body {
 
 ```tsx
 // components/SmoothScroll.tsx
-'use client'
+"use client";
 
-import { ReactLenis, useLenis } from 'lenis/react'
-import { useEffect, useRef } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { ReactLenis, useLenis } from "lenis/react";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger);
 
 function LenisGSAPConnector() {
-  const lenis = useLenis()
+  const lenis = useLenis();
 
   useEffect(() => {
-    if (!lenis) return
+    if (!lenis) return;
 
     // Connect Lenis scroll to ScrollTrigger
-    lenis.on('scroll', ScrollTrigger.update)
+    lenis.on("scroll", ScrollTrigger.update);
 
     // Use GSAP ticker for RAF
     const update = (time: number) => {
-      lenis.raf(time * 1000)
-    }
+      lenis.raf(time * 1000);
+    };
 
-    gsap.ticker.add(update)
-    gsap.ticker.lagSmoothing(0)
+    gsap.ticker.add(update);
+    gsap.ticker.lagSmoothing(0);
 
     return () => {
-      gsap.ticker.remove(update)
-      lenis.off('scroll', ScrollTrigger.update)
-    }
-  }, [lenis])
+      gsap.ticker.remove(update);
+      lenis.off("scroll", ScrollTrigger.update);
+    };
+  }, [lenis]);
 
-  return null
+  return null;
 }
 
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
@@ -136,48 +142,48 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       <LenisGSAPConnector />
       {children}
     </ReactLenis>
-  )
+  );
 }
 ```
 
 ### Alternative: Ref-based Integration
 
 ```tsx
-'use client'
+"use client";
 
-import { ReactLenis, type LenisRef } from 'lenis/react'
-import { useEffect, useRef } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { ReactLenis, type LenisRef } from "lenis/react";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger);
 
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
-  const lenisRef = useRef<LenisRef>(null)
+  const lenisRef = useRef<LenisRef>(null);
 
   useEffect(() => {
-    const lenis = lenisRef.current?.lenis
-    if (!lenis) return
+    const lenis = lenisRef.current?.lenis;
+    if (!lenis) return;
 
-    lenis.on('scroll', ScrollTrigger.update)
+    lenis.on("scroll", ScrollTrigger.update);
 
     const update = (time: number) => {
-      lenis.raf(time * 1000)
-    }
+      lenis.raf(time * 1000);
+    };
 
-    gsap.ticker.add(update)
-    gsap.ticker.lagSmoothing(0)
+    gsap.ticker.add(update);
+    gsap.ticker.lagSmoothing(0);
 
     return () => {
-      gsap.ticker.remove(update)
-    }
-  }, [])
+      gsap.ticker.remove(update);
+    };
+  }, []);
 
   return (
     <ReactLenis ref={lenisRef} root options={{ lerp: 0.1 }}>
       {children}
     </ReactLenis>
-  )
+  );
 }
 ```
 
@@ -186,107 +192,103 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
 ### Basic Usage
 
 ```tsx
-'use client'
+"use client";
 
-import { useLenis } from 'lenis/react'
+import { useLenis } from "lenis/react";
 
 function ScrollProgress() {
-  const [progress, setProgress] = useState(0)
+  const [progress, setProgress] = useState(0);
 
   useLenis(({ scroll, limit, velocity, direction }) => {
-    setProgress(scroll / limit)
-    console.log({ scroll, limit, velocity, direction })
-  })
+    setProgress(scroll / limit);
+    console.log({ scroll, limit, velocity, direction });
+  });
 
   return (
     <div
       className="fixed top-0 left-0 h-1 bg-blue-500 z-50"
       style={{ width: `${progress * 100}%` }}
     />
-  )
+  );
 }
 ```
 
 ### Scroll to Element
 
 ```tsx
-'use client'
+"use client";
 
-import { useLenis } from 'lenis/react'
+import { useLenis } from "lenis/react";
 
 function ScrollToSection() {
-  const lenis = useLenis()
+  const lenis = useLenis();
 
   const scrollToSection = (id: string) => {
-    const element = document.getElementById(id)
+    const element = document.getElementById(id);
     if (element && lenis) {
       lenis.scrollTo(element, {
-        offset: -100,        // Offset from top
-        duration: 1.5,       // Animation duration
+        offset: -100, // Offset from top
+        duration: 1.5, // Animation duration
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      })
+      });
     }
-  }
+  };
 
   return (
     <nav>
-      <button onClick={() => scrollToSection('about')}>About</button>
-      <button onClick={() => scrollToSection('work')}>Work</button>
-      <button onClick={() => scrollToSection('contact')}>Contact</button>
+      <button onClick={() => scrollToSection("about")}>About</button>
+      <button onClick={() => scrollToSection("work")}>Work</button>
+      <button onClick={() => scrollToSection("contact")}>Contact</button>
     </nav>
-  )
+  );
 }
 ```
 
 ### Stop/Start Scroll
 
 ```tsx
-'use client'
+"use client";
 
-import { useLenis } from 'lenis/react'
+import { useLenis } from "lenis/react";
 
 function Modal({ isOpen, onClose, children }) {
-  const lenis = useLenis()
+  const lenis = useLenis();
 
   useEffect(() => {
     if (isOpen) {
-      lenis?.stop()
+      lenis?.stop();
     } else {
-      lenis?.start()
+      lenis?.start();
     }
-  }, [isOpen, lenis])
+  }, [isOpen, lenis]);
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50">
-      {children}
-    </div>
-  )
+  return <div className="fixed inset-0 z-50">{children}</div>;
 }
 ```
 
 ### Velocity-Based Effects
 
 ```tsx
-'use client'
+"use client";
 
-import { useLenis } from 'lenis/react'
-import { useRef } from 'react'
-import gsap from 'gsap'
+import { useLenis } from "lenis/react";
+import { useRef } from "react";
+import gsap from "gsap";
 
 function VelocitySkew() {
-  const textRef = useRef<HTMLHeadingElement>(null)
+  const textRef = useRef<HTMLHeadingElement>(null);
 
   useLenis(({ velocity }) => {
     gsap.to(textRef.current, {
       skewY: velocity * 0.05,
       duration: 0.3,
-      ease: 'power2.out',
-    })
-  })
+      ease: "power2.out",
+    });
+  });
 
-  return <h1 ref={textRef}>Velocity Skew Text</h1>
+  return <h1 ref={textRef}>Velocity Skew Text</h1>;
 }
 ```
 
@@ -299,35 +301,35 @@ function VelocitySkew() {
   root
   options={{
     // Smoothing
-    lerp: 0.1,              // Linear interpolation (0-1), lower = smoother
-    duration: 1.2,          // Animation duration in seconds
+    lerp: 0.1, // Linear interpolation (0-1), lower = smoother
+    duration: 1.2, // Animation duration in seconds
 
     // Wheel
-    smoothWheel: true,      // Smooth wheel scrolling
-    wheelMultiplier: 1,     // Wheel sensitivity
+    smoothWheel: true, // Smooth wheel scrolling
+    wheelMultiplier: 1, // Wheel sensitivity
 
     // Touch
-    touchMultiplier: 2,     // Touch sensitivity
-    syncTouch: false,       // Sync touch with lerp (experimental)
-    syncTouchLerp: 0.075,   // Lerp for sync touch
+    touchMultiplier: 2, // Touch sensitivity
+    syncTouch: false, // Sync touch with lerp (experimental)
+    syncTouchLerp: 0.075, // Lerp for sync touch
 
     // Direction
-    orientation: 'vertical', // 'vertical' | 'horizontal'
-    gestureOrientation: 'vertical',
+    orientation: "vertical", // 'vertical' | 'horizontal'
+    gestureOrientation: "vertical",
 
     // Behavior
-    infinite: false,        // Infinite scroll
-    autoRaf: false,         // Use built-in RAF (false when using GSAP ticker)
+    infinite: false, // Infinite scroll
+    autoRaf: false, // Use built-in RAF (false when using GSAP ticker)
 
     // Content
-    wrapper: window,        // Scroll wrapper element
+    wrapper: window, // Scroll wrapper element
     content: document.documentElement,
 
     // Events
-    eventsTarget: window,   // Event listener target
+    eventsTarget: window, // Event listener target
 
     // Misc
-    prevent: undefined,     // Function to prevent scroll on certain elements
+    prevent: undefined, // Function to prevent scroll on certain elements
     virtualScroll: undefined, // Custom virtual scroll handler
   }}
 >
@@ -344,7 +346,7 @@ const premiumOptions = {
   duration: 1.5,
   smoothWheel: true,
   wheelMultiplier: 0.8,
-}
+};
 
 // Snappy feel
 const snappyOptions = {
@@ -352,7 +354,7 @@ const snappyOptions = {
   duration: 0.8,
   smoothWheel: true,
   wheelMultiplier: 1.2,
-}
+};
 
 // Mobile-friendly
 const mobileOptions = {
@@ -361,7 +363,7 @@ const mobileOptions = {
   touchMultiplier: 1.5,
   syncTouch: true,
   syncTouchLerp: 0.075,
-}
+};
 ```
 
 ## Common Patterns
@@ -383,106 +385,109 @@ const mobileOptions = {
 ### Anchor Links
 
 ```tsx
-'use client'
+"use client";
 
-import { useLenis } from 'lenis/react'
-import { useEffect } from 'react'
+import { useLenis } from "lenis/react";
+import { useEffect } from "react";
 
 function AnchorHandler() {
-  const lenis = useLenis()
+  const lenis = useLenis();
 
   useEffect(() => {
     // Handle anchor links
     const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLAnchorElement
+      const target = e.target as HTMLAnchorElement;
       if (target.hash) {
-        e.preventDefault()
-        const element = document.querySelector(target.hash)
+        e.preventDefault();
+        const element = document.querySelector(target.hash);
         if (element) {
-          lenis?.scrollTo(element as HTMLElement, { offset: -100 })
+          lenis?.scrollTo(element as HTMLElement, { offset: -100 });
         }
       }
-    }
+    };
 
-    document.addEventListener('click', handleClick)
-    return () => document.removeEventListener('click', handleClick)
-  }, [lenis])
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, [lenis]);
 
-  return null
+  return null;
 }
 ```
 
 ### Scroll Direction Detection
 
 ```tsx
-'use client'
+"use client";
 
-import { useLenis } from 'lenis/react'
-import { useState } from 'react'
+import { useLenis } from "lenis/react";
+import { useState } from "react";
 
 function DirectionAwareHeader() {
-  const [isVisible, setIsVisible] = useState(true)
+  const [isVisible, setIsVisible] = useState(true);
 
   useLenis(({ direction }) => {
-    setIsVisible(direction <= 0) // Show on scroll up
-  })
+    setIsVisible(direction <= 0); // Show on scroll up
+  });
 
   return (
     <header
       className={`fixed top-0 transition-transform duration-300 ${
-        isVisible ? 'translate-y-0' : '-translate-y-full'
+        isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
       Header
     </header>
-  )
+  );
 }
 ```
 
 ### Horizontal Scroll Section with Lenis
 
 ```tsx
-'use client'
+"use client";
 
-import { useLenis } from 'lenis/react'
-import { useRef, useEffect } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
+import { useLenis } from "lenis/react";
+import { useRef, useEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger);
 
 function HorizontalSection() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const wrapperRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => {
-    const sections = gsap.utils.toArray<HTMLElement>('.h-section')
+  useGSAP(
+    () => {
+      const sections = gsap.utils.toArray<HTMLElement>(".h-section");
 
-    gsap.to(sections, {
-      xPercent: -100 * (sections.length - 1),
-      ease: 'none',
-      scrollTrigger: {
-        trigger: wrapperRef.current,
-        pin: true,
-        scrub: 1,
-        snap: 1 / (sections.length - 1),
-        end: () => '+=' + wrapperRef.current!.scrollWidth,
-      }
-    })
-  }, { scope: containerRef })
+      gsap.to(sections, {
+        xPercent: -100 * (sections.length - 1),
+        ease: "none",
+        scrollTrigger: {
+          trigger: wrapperRef.current,
+          pin: true,
+          scrub: 1,
+          snap: 1 / (sections.length - 1),
+          end: () => "+=" + wrapperRef.current!.scrollWidth,
+        },
+      });
+    },
+    { scope: containerRef },
+  );
 
   return (
     <div ref={containerRef}>
       <div ref={wrapperRef} className="flex" data-lenis-prevent-wheel>
-        {[1, 2, 3, 4].map(i => (
+        {[1, 2, 3, 4].map((i) => (
           <div key={i} className="h-section w-screen h-screen shrink-0">
             Section {i}
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }
 ```
 
@@ -494,9 +499,9 @@ function HorizontalSection() {
 // Always refresh after Lenis initializes
 useEffect(() => {
   if (lenis) {
-    ScrollTrigger.refresh()
+    ScrollTrigger.refresh();
   }
-}, [lenis])
+}, [lenis]);
 ```
 
 ### Jerky Scroll on Mobile
@@ -519,11 +524,11 @@ useEffect(() => {
 // Stop Lenis when modal opens
 useEffect(() => {
   if (isModalOpen) {
-    lenis?.stop()
+    lenis?.stop();
   } else {
-    lenis?.start()
+    lenis?.start();
   }
-}, [isModalOpen, lenis])
+}, [isModalOpen, lenis]);
 ```
 
 ### Performance Issues
@@ -539,20 +544,20 @@ useEffect(() => {
 3. Use `usePathname()` to reset scroll on navigation:
 
 ```tsx
-'use client'
+"use client";
 
-import { useLenis } from 'lenis/react'
-import { usePathname } from 'next/navigation'
-import { useEffect } from 'react'
+import { useLenis } from "lenis/react";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 function ScrollReset() {
-  const lenis = useLenis()
-  const pathname = usePathname()
+  const lenis = useLenis();
+  const pathname = usePathname();
 
   useEffect(() => {
-    lenis?.scrollTo(0, { immediate: true })
-  }, [pathname, lenis])
+    lenis?.scrollTo(0, { immediate: true });
+  }, [pathname, lenis]);
 
-  return null
+  return null;
 }
 ```

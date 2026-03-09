@@ -1,18 +1,14 @@
-import type { Metadata } from "next"
+import type { Metadata } from "next";
 
 interface PagesLayoutProps {
-    children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export const metadata: Metadata = {
-    metadataBase: new URL('https://threads.codebustar.com'),
-    title: "Search",
-}
+  metadataBase: new URL("https://threads.codebustar.com"),
+  title: "Search",
+};
 
 export default function SearchLayout({ children }: PagesLayoutProps) {
-    return (
-        <>
-            {children}
-        </>
-    )
+  return <>{children}</>;
 }

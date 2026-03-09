@@ -1,22 +1,28 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
-import type { User } from "@clerk/nextjs/server"
-import type { UserResource } from "@clerk/types"
-import * as z from "zod"
-import { toast } from "sonner"
-import { isClerkAPIResponseError } from "@clerk/nextjs"
-import { differenceInSeconds, differenceInMinutes, differenceInHours, differenceInDays, differenceInWeeks } from 'date-fns';
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import type { User } from "@clerk/nextjs/server";
+import type { UserResource } from "@clerk/types";
+import * as z from "zod";
+import { toast } from "sonner";
+import { isClerkAPIResponseError } from "@clerk/nextjs";
+import {
+  differenceInSeconds,
+  differenceInMinutes,
+  differenceInHours,
+  differenceInDays,
+  differenceInWeeks,
+} from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function getUserEmail(user: UserResource | User | null) {
   const email =
     user?.emailAddresses?.find((e) => e.id === user.primaryEmailAddressId)
-      ?.emailAddress ?? ""
+      ?.emailAddress ?? "";
 
-  return email
+  return email;
 }
 
 export function emailToUsername(user: UserResource | User | null) {
@@ -25,7 +31,7 @@ export function emailToUsername(user: UserResource | User | null) {
 
   if (usernameMatch) {
     const username = usernameMatch[1]!;
-    const newUsername = username.replace(/[\+.]/g, "")
+    const newUsername = username.replace(/[\+.]/g, "");
     return newUsername;
   } else {
     const firstName = user?.firstName ?? "";
@@ -37,26 +43,25 @@ export function emailToUsername(user: UserResource | User | null) {
 export function formatURL(originalURL: string) {
   const parsedUrl = new URL(originalURL);
   const domain = parsedUrl.hostname;
-  const firstPath = parsedUrl.pathname.split('/')[1] ?? '';
+  const firstPath = parsedUrl.pathname.split("/")[1] ?? "";
 
-  return `${domain}${firstPath ? `/${firstPath}` : ''}`;
+  return `${domain}${firstPath ? `/${firstPath}` : ""}`;
 }
 
 export function catchClerkError(err: unknown) {
-  const unknownErr = "Something went wrong, please try again later."
+  const unknownErr = "Something went wrong, please try again later.";
 
   if (err instanceof z.ZodError) {
     const errors = err.issues.map((issue) => {
-      return issue.message
-    })
-    return toast(errors.join("\n"))
+      return issue.message;
+    });
+    return toast(errors.join("\n"));
   } else if (isClerkAPIResponseError(err)) {
-    return toast.error(err.errors[0]?.longMessage ?? unknownErr)
+    return toast.error(err.errors[0]?.longMessage ?? unknownErr);
   } else {
-    return toast.error(unknownErr)
+    return toast.error(unknownErr);
   }
 }
-
 
 export function formatTimeAgo(timestamp: Date): string {
   const now = new Date();
@@ -86,4 +91,3 @@ export function truncateText(text: string, maxLength: number) {
     return text;
   }
 }
-

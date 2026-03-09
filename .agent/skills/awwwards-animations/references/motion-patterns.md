@@ -3,6 +3,7 @@
 React animation patterns using Motion library (formerly Framer Motion).
 
 ## Table of Contents
+
 1. [Setup](#setup)
 2. [Basic Animations](#basic-animations)
 3. [Scroll Animations](#scroll-animations)
@@ -19,7 +20,7 @@ npm install motion
 ```
 
 ```jsx
-import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react'
+import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
 ```
 
 ## Basic Animations
@@ -45,34 +46,30 @@ const containerVariants = {
     opacity: 1,
     transition: {
       staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
-}
+      delayChildren: 0.2,
+    },
+  },
+};
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: 'easeOut' }
-  }
-}
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+};
 
 function List({ items }) {
   return (
-    <motion.ul
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {items.map(item => (
+    <motion.ul variants={containerVariants} initial="hidden" animate="visible">
+      {items.map((item) => (
         <motion.li key={item.id} variants={itemVariants}>
           {item.name}
         </motion.li>
       ))}
     </motion.ul>
-  )
+  );
 }
 ```
 
@@ -82,7 +79,7 @@ function List({ items }) {
 <motion.div
   initial={{ opacity: 0, y: 50 }}
   whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true, margin: '-100px' }}
+  viewport={{ once: true, margin: "-100px" }}
   transition={{ duration: 0.6 }}
 >
   Animates when scrolled into view
@@ -94,17 +91,14 @@ function List({ items }) {
 ### Scroll Progress
 
 ```jsx
-import { motion, useScroll, useTransform } from 'motion/react'
+import { motion, useScroll, useTransform } from "motion/react";
 
 function ScrollProgress() {
-  const { scrollYProgress } = useScroll()
+  const { scrollYProgress } = useScroll();
 
   return (
-    <motion.div
-      className="progress-bar"
-      style={{ scaleX: scrollYProgress }}
-    />
-  )
+    <motion.div className="progress-bar" style={{ scaleX: scrollYProgress }} />
+  );
 }
 ```
 
@@ -112,16 +106,16 @@ function ScrollProgress() {
 
 ```jsx
 function ParallaxHero() {
-  const { scrollY } = useScroll()
-  const y = useTransform(scrollY, [0, 500], [0, 150])
-  const opacity = useTransform(scrollY, [0, 300], [1, 0])
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 500], [0, 150]);
+  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
   return (
     <div className="hero">
       <motion.div className="hero-bg" style={{ y }} />
       <motion.h1 style={{ opacity }}>Hero Title</motion.h1>
     </div>
-  )
+  );
 }
 ```
 
@@ -129,38 +123,34 @@ function ParallaxHero() {
 
 ```jsx
 function ScrollSection() {
-  const ref = useRef(null)
+  const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ['start end', 'end start']
-  })
+    offset: ["start end", "end start"],
+  });
 
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1, 0.8])
-  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0])
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.8, 1, 0.8]);
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
 
   return (
     <motion.section ref={ref} style={{ scale, opacity }}>
       Content
     </motion.section>
-  )
+  );
 }
 ```
 
 ### Scroll Velocity
 
 ```jsx
-import { useScroll, useVelocity, useTransform, motion } from 'motion/react'
+import { useScroll, useVelocity, useTransform, motion } from "motion/react";
 
 function VelocityText() {
-  const { scrollY } = useScroll()
-  const scrollVelocity = useVelocity(scrollY)
-  const skewY = useTransform(scrollVelocity, [-1000, 0, 1000], [-3, 0, 3])
+  const { scrollY } = useScroll();
+  const scrollVelocity = useVelocity(scrollY);
+  const skewY = useTransform(scrollVelocity, [-1000, 0, 1000], [-3, 0, 3]);
 
-  return (
-    <motion.h1 style={{ skewY }}>
-      Velocity Skew
-    </motion.h1>
-  )
+  return <motion.h1 style={{ skewY }}>Velocity Skew</motion.h1>;
 }
 ```
 
@@ -170,22 +160,18 @@ function VelocityText() {
 
 ```jsx
 // layout.jsx
-import { AnimatePresence } from 'motion/react'
+import { AnimatePresence } from "motion/react";
 
 function Layout({ children }) {
-  return (
-    <AnimatePresence mode="wait">
-      {children}
-    </AnimatePresence>
-  )
+  return <AnimatePresence mode="wait">{children}</AnimatePresence>;
 }
 
 // page.jsx
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 }
-}
+  exit: { opacity: 0, y: -20 },
+};
 
 function Page() {
   return (
@@ -199,7 +185,7 @@ function Page() {
     >
       Content
     </motion.main>
-  )
+  );
 }
 ```
 
@@ -210,13 +196,13 @@ const overlayVariants = {
   initial: { scaleY: 0 },
   animate: {
     scaleY: 1,
-    transition: { duration: 0.5, ease: [0.76, 0, 0.24, 1] }
+    transition: { duration: 0.5, ease: [0.76, 0, 0.24, 1] },
   },
   exit: {
     scaleY: 0,
-    transition: { duration: 0.5, ease: [0.76, 0, 0.24, 1], delay: 0.2 }
-  }
-}
+    transition: { duration: 0.5, ease: [0.76, 0, 0.24, 1], delay: 0.2 },
+  },
+};
 
 function PageTransition({ children }) {
   return (
@@ -227,11 +213,11 @@ function PageTransition({ children }) {
         initial="initial"
         animate="animate"
         exit="exit"
-        style={{ transformOrigin: 'bottom' }}
+        style={{ transformOrigin: "bottom" }}
       />
       {children}
     </>
-  )
+  );
 }
 ```
 
@@ -242,7 +228,7 @@ function CardGrid({ items, selectedId, setSelectedId }) {
   return (
     <>
       <div className="grid">
-        {items.map(item => (
+        {items.map((item) => (
           <motion.div
             key={item.id}
             layoutId={item.id}
@@ -261,13 +247,13 @@ function CardGrid({ items, selectedId, setSelectedId }) {
             onClick={() => setSelectedId(null)}
           >
             <motion.h2 layoutId={`title-${selectedId}`}>
-              {items.find(i => i.id === selectedId).title}
+              {items.find((i) => i.id === selectedId).title}
             </motion.h2>
           </motion.div>
         )}
       </AnimatePresence>
     </>
-  )
+  );
 }
 ```
 
@@ -277,15 +263,15 @@ function CardGrid({ items, selectedId, setSelectedId }) {
 
 ```jsx
 function AnimatedText({ text }) {
-  const chars = text.split('')
+  const chars = text.split("");
 
   const container = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.02 }
-    }
-  }
+      transition: { staggerChildren: 0.02 },
+    },
+  };
 
   const child = {
     hidden: { opacity: 0, y: 50, rotateX: -90 },
@@ -293,9 +279,9 @@ function AnimatedText({ text }) {
       opacity: 1,
       y: 0,
       rotateX: 0,
-      transition: { type: 'spring', damping: 12 }
-    }
-  }
+      transition: { type: "spring", damping: 12 },
+    },
+  };
 
   return (
     <motion.span
@@ -303,19 +289,19 @@ function AnimatedText({ text }) {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
-      style={{ display: 'inline-block' }}
+      style={{ display: "inline-block" }}
     >
       {chars.map((char, i) => (
         <motion.span
           key={i}
           variants={child}
-          style={{ display: 'inline-block' }}
+          style={{ display: "inline-block" }}
         >
-          {char === ' ' ? '\u00A0' : char}
+          {char === " " ? "\u00A0" : char}
         </motion.span>
       ))}
     </motion.span>
-  )
+  );
 }
 ```
 
@@ -323,7 +309,7 @@ function AnimatedText({ text }) {
 
 ```jsx
 function AnimatedWords({ text }) {
-  const words = text.split(' ')
+  const words = text.split(" ");
 
   return (
     <motion.p
@@ -331,7 +317,7 @@ function AnimatedWords({ text }) {
       whileInView="visible"
       viewport={{ once: true }}
       variants={{
-        visible: { transition: { staggerChildren: 0.05 } }
+        visible: { transition: { staggerChildren: 0.05 } },
       }}
     >
       {words.map((word, i) => (
@@ -340,14 +326,14 @@ function AnimatedWords({ text }) {
           className="word"
           variants={{
             hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0 }
+            visible: { opacity: 1, y: 0 },
           }}
         >
-          {word}{' '}
+          {word}{" "}
         </motion.span>
       ))}
     </motion.p>
-  )
+  );
 }
 ```
 
@@ -356,9 +342,9 @@ function AnimatedWords({ text }) {
 ```jsx
 function MaskReveal({ children }) {
   return (
-    <div style={{ overflow: 'hidden' }}>
+    <div style={{ overflow: "hidden" }}>
       <motion.div
-        initial={{ y: '100%' }}
+        initial={{ y: "100%" }}
         whileInView={{ y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
@@ -366,7 +352,7 @@ function MaskReveal({ children }) {
         {children}
       </motion.div>
     </div>
-  )
+  );
 }
 ```
 
@@ -376,18 +362,18 @@ function MaskReveal({ children }) {
 
 ```jsx
 function MagneticButton({ children }) {
-  const ref = useRef(null)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const ref = useRef(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const handleMouse = (e) => {
-    const { clientX, clientY } = e
-    const { left, top, width, height } = ref.current.getBoundingClientRect()
-    const x = (clientX - left - width / 2) * 0.3
-    const y = (clientY - top - height / 2) * 0.3
-    setPosition({ x, y })
-  }
+    const { clientX, clientY } = e;
+    const { left, top, width, height } = ref.current.getBoundingClientRect();
+    const x = (clientX - left - width / 2) * 0.3;
+    const y = (clientY - top - height / 2) * 0.3;
+    setPosition({ x, y });
+  };
 
-  const reset = () => setPosition({ x: 0, y: 0 })
+  const reset = () => setPosition({ x: 0, y: 0 });
 
   return (
     <motion.button
@@ -395,11 +381,11 @@ function MagneticButton({ children }) {
       onMouseMove={handleMouse}
       onMouseLeave={reset}
       animate={position}
-      transition={{ type: 'spring', stiffness: 150, damping: 15 }}
+      transition={{ type: "spring", stiffness: 150, damping: 15 }}
     >
       {children}
     </motion.button>
-  )
+  );
 }
 ```
 
@@ -411,14 +397,11 @@ function HoverCard() {
     <motion.div
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
     >
-      <motion.img
-        whileHover={{ scale: 1.1 }}
-        transition={{ duration: 0.4 }}
-      />
+      <motion.img whileHover={{ scale: 1.1 }} transition={{ duration: 0.4 }} />
     </motion.div>
-  )
+  );
 }
 ```
 
@@ -431,11 +414,11 @@ function DraggableCard() {
       drag
       dragConstraints={{ left: -100, right: 100, top: -100, bottom: 100 }}
       dragElastic={0.1}
-      whileDrag={{ scale: 1.1, cursor: 'grabbing' }}
+      whileDrag={{ scale: 1.1, cursor: "grabbing" }}
     >
       Drag me
     </motion.div>
-  )
+  );
 }
 ```
 
@@ -444,20 +427,20 @@ function DraggableCard() {
 ### Reorder List
 
 ```jsx
-import { Reorder } from 'motion/react'
+import { Reorder } from "motion/react";
 
 function ReorderList() {
-  const [items, setItems] = useState([1, 2, 3, 4])
+  const [items, setItems] = useState([1, 2, 3, 4]);
 
   return (
     <Reorder.Group values={items} onReorder={setItems}>
-      {items.map(item => (
+      {items.map((item) => (
         <Reorder.Item key={item} value={item}>
           {item}
         </Reorder.Item>
       ))}
     </Reorder.Group>
-  )
+  );
 }
 ```
 
@@ -465,7 +448,7 @@ function ReorderList() {
 
 ```jsx
 function Accordion({ title, children }) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div>
@@ -478,7 +461,7 @@ function Accordion({ title, children }) {
         {isOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
+            animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
@@ -487,7 +470,7 @@ function Accordion({ title, children }) {
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
 ```
 
@@ -513,14 +496,14 @@ function Modal({ isOpen, onClose, children }) {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: 'spring', damping: 20 }}
+            transition={{ type: "spring", damping: 20 }}
           >
             {children}
           </motion.div>
         </>
       )}
     </AnimatePresence>
-  )
+  );
 }
 ```
 
@@ -549,16 +532,16 @@ transition: { type: 'tween', duration: 0.5, ease: 'easeOut' }
 6. Use `useReducedMotion` hook for accessibility
 
 ```jsx
-import { useReducedMotion } from 'motion/react'
+import { useReducedMotion } from "motion/react";
 
 function Component() {
-  const shouldReduceMotion = useReducedMotion()
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <motion.div
       animate={{ x: shouldReduceMotion ? 0 : 100 }}
       transition={{ duration: shouldReduceMotion ? 0 : 0.5 }}
     />
-  )
+  );
 }
 ```

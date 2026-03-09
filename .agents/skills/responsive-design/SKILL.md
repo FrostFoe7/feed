@@ -6,9 +6,7 @@ metadata:
   platforms: Claude, ChatGPT, Gemini
 ---
 
-
 # Responsive Design
-
 
 ## When to use this skill
 
@@ -24,6 +22,7 @@ metadata:
 Design from small screens and progressively expand.
 
 **Example**:
+
 ```css
 /* Default: Mobile (320px~) */
 .container {
@@ -77,6 +76,7 @@ Design from small screens and progressively expand.
 Leverage modern CSS layout systems.
 
 **Flexbox** (1-dimensional layout):
+
 ```css
 /* Navigation bar */
 .navbar {
@@ -100,18 +100,19 @@ Leverage modern CSS layout systems.
   }
 
   .card {
-    flex: 1 1 calc(50% - 0.5rem);  /* 2 columns */
+    flex: 1 1 calc(50% - 0.5rem); /* 2 columns */
   }
 }
 
 @media (min-width: 1024px) {
   .card {
-    flex: 1 1 calc(33.333% - 0.667rem);  /* 3 columns */
+    flex: 1 1 calc(33.333% - 0.667rem); /* 3 columns */
   }
 }
 ```
 
 **CSS Grid** (2-dimensional layout):
+
 ```css
 /* Dashboard layout */
 .dashboard {
@@ -140,10 +141,18 @@ Leverage modern CSS layout systems.
   }
 }
 
-.header { grid-area: header; }
-.sidebar { grid-area: sidebar; }
-.main { grid-area: main; }
-.footer { grid-area: footer; }
+.header {
+  grid-area: header;
+}
+.sidebar {
+  grid-area: sidebar;
+}
+.main {
+  grid-area: main;
+}
+.footer {
+  grid-area: footer;
+}
 ```
 
 ### Step 3: Responsive Images
@@ -151,12 +160,13 @@ Leverage modern CSS layout systems.
 Provide images suited to the device.
 
 **Using srcset**:
+
 ```html
 <img
   src="image-800.jpg"
   srcset="
-    image-400.jpg 400w,
-    image-800.jpg 800w,
+    image-400.jpg   400w,
+    image-800.jpg   800w,
     image-1200.jpg 1200w,
     image-1600.jpg 1600w
   "
@@ -170,43 +180,42 @@ Provide images suited to the device.
 ```
 
 **picture element** (Art Direction):
+
 ```html
 <picture>
   <!-- Mobile: portrait image -->
-  <source media="(max-width: 767px)" srcset="portrait.jpg">
+  <source media="(max-width: 767px)" srcset="portrait.jpg" />
 
   <!-- Tablet: square image -->
-  <source media="(max-width: 1023px)" srcset="square.jpg">
+  <source media="(max-width: 1023px)" srcset="square.jpg" />
 
   <!-- Desktop: landscape image -->
-  <img src="landscape.jpg" alt="Art direction example">
+  <img src="landscape.jpg" alt="Art direction example" />
 </picture>
 ```
 
 **CSS background images**:
+
 ```css
 .hero {
-  background-image: url('hero-mobile.jpg');
+  background-image: url("hero-mobile.jpg");
 }
 
 @media (min-width: 768px) {
   .hero {
-    background-image: url('hero-tablet.jpg');
+    background-image: url("hero-tablet.jpg");
   }
 }
 
 @media (min-width: 1024px) {
   .hero {
-    background-image: url('hero-desktop.jpg');
+    background-image: url("hero-desktop.jpg");
   }
 }
 
 /* Or use image-set() */
 .hero {
-  background-image: image-set(
-    url('hero-1x.jpg') 1x,
-    url('hero-2x.jpg') 2x
-  );
+  background-image: image-set(url("hero-1x.jpg") 1x, url("hero-2x.jpg") 2x);
 }
 ```
 
@@ -215,6 +224,7 @@ Provide images suited to the device.
 Adjust text size based on screen size.
 
 **clamp() function** (fluid sizing):
+
 ```css
 :root {
   /* min, preferred, max */
@@ -239,6 +249,7 @@ h2 {
 ```
 
 **Media query approach**:
+
 ```css
 body {
   font-size: 14px;
@@ -246,11 +257,15 @@ body {
 }
 
 @media (min-width: 768px) {
-  body { font-size: 16px; }
+  body {
+    font-size: 16px;
+  }
 }
 
 @media (min-width: 1024px) {
-  body { font-size: 18px; }
+  body {
+    font-size: 18px;
+  }
 }
 ```
 
@@ -313,8 +328,12 @@ Apply styles based on parent container size.
 }
 
 /* Usage example */
-@media (min-width: 768px) { /* Tablet */ }
-@media (min-width: 1024px) { /* Desktop */ }
+@media (min-width: 768px) {
+  /* Tablet */
+}
+@media (min-width: 1024px) {
+  /* Desktop */
+}
 ```
 
 ## Constraints
@@ -322,8 +341,9 @@ Apply styles based on parent container size.
 ### Mandatory Rules (MUST)
 
 1. **Viewport meta tag**: Must be included in HTML
+
    ```html
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
    ```
 
 2. **Mobile-First**: Mobile default, use min-width media queries
@@ -354,7 +374,9 @@ function ResponsiveNav() {
   return (
     <nav className="navbar">
       {/* Logo */}
-      <a href="/" className="logo">MyApp</a>
+      <a href="/" className="logo">
+        MyApp
+      </a>
 
       {/* Hamburger button (mobile) */}
       <button
@@ -369,10 +391,16 @@ function ResponsiveNav() {
       </button>
 
       {/* Navigation links */}
-      <ul className={`nav-links ${isOpen ? 'active' : ''}`}>
-        <li><a href="/about">About</a></li>
-        <li><a href="/services">Services</a></li>
-        <li><a href="/contact">Contact</a></li>
+      <ul className={`nav-links ${isOpen ? "active" : ""}`}>
+        <li>
+          <a href="/about">About</a>
+        </li>
+        <li>
+          <a href="/services">Services</a>
+        </li>
+        <li>
+          <a href="/contact">Contact</a>
+        </li>
       </ul>
     </nav>
   );
@@ -429,7 +457,7 @@ function ResponsiveNav() {
 function ProductGrid({ products }) {
   return (
     <div className="product-grid">
-      {products.map(product => (
+      {products.map((product) => (
         <div key={product.id} className="product-card">
           <img src={product.image} alt={product.name} />
           <h3>{product.name}</h3>
@@ -445,27 +473,27 @@ function ProductGrid({ products }) {
 ```css
 .product-grid {
   display: grid;
-  grid-template-columns: 1fr;  /* Mobile: 1 column */
+  grid-template-columns: 1fr; /* Mobile: 1 column */
   gap: 1rem;
   padding: 1rem;
 }
 
 @media (min-width: 640px) {
   .product-grid {
-    grid-template-columns: repeat(2, 1fr);  /* 2 columns */
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
   }
 }
 
 @media (min-width: 1024px) {
   .product-grid {
-    grid-template-columns: repeat(3, 1fr);  /* 3 columns */
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
     gap: 1.5rem;
   }
 }
 
 @media (min-width: 1440px) {
   .product-grid {
-    grid-template-columns: repeat(4, 1fr);  /* 4 columns */
+    grid-template-columns: repeat(4, 1fr); /* 4 columns */
     gap: 2rem;
   }
 }
@@ -501,13 +529,16 @@ function ProductGrid({ products }) {
 ## Metadata
 
 ### Version
+
 - **Current Version**: 1.0.0
 - **Last Updated**: 2025-01-01
 - **Compatible Platforms**: Claude, ChatGPT, Gemini
 
 ### Related Skills
+
 - [ui-component-patterns](../ui-component-patterns/SKILL.md): Responsive components
 - [web-accessibility](../web-accessibility/SKILL.md): Consider alongside accessibility
 
 ### Tags
+
 `#responsive` `#mobile-first` `#CSS` `#Flexbox` `#Grid` `#media-query` `#frontend`

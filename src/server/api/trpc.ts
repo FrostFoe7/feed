@@ -84,22 +84,22 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
  * These are the pieces you use to build your tRPC API. You should import these a lot in the
  * "/src/server/api/routers" directory.
  */
-export const middleware = t.middleware
+export const middleware = t.middleware;
 
 const isAuth = middleware(async (opts) => {
-  const user = await currentUser()
+  const user = await currentUser();
 
   if (!user?.id) {
-    throw new TRPCError({ code: 'UNAUTHORIZED' })
+    throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
   return opts.next({
     ctx: {
       userId: user.id,
       user,
-    }
-  })
-})
+    },
+  });
+});
 
 /**
  * This is how you create new routers and sub-routers in your tRPC API.
@@ -115,7 +115,6 @@ export const createTRPCRouter = t.router;
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
-
 
 export const publicProcedure = t.procedure;
 export const privateProcedure = t.procedure.use(isAuth);

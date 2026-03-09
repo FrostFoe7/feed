@@ -6,9 +6,7 @@ metadata:
   platforms: Claude, ChatGPT, Gemini
 ---
 
-
 # Performance Optimization
-
 
 ## When to use this skill
 
@@ -22,6 +20,7 @@ metadata:
 ### Step 1: Measure performance
 
 **Lighthouse (Chrome DevTools)**:
+
 ```bash
 # CLI
 npm install -g lighthouse
@@ -32,8 +31,9 @@ lighthouse https://example.com --output=json --output-path=./report.json
 ```
 
 **Measure Web Vitals** (React):
+
 ```typescript
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from "web-vitals";
 
 function sendToAnalytics(metric: any) {
   // Send to Google Analytics, Datadog, etc.
@@ -50,6 +50,7 @@ getTTFB(sendToAnalytics);
 ### Step 2: Optimize React
 
 **React.memo (prevent unnecessary re-renders)**:
+
 ```tsx
 // ❌ Bad: child re-renders whenever the parent re-renders
 function ExpensiveComponent({ data }: { data: Data }) {
@@ -63,11 +64,12 @@ const ExpensiveComponent = React.memo(({ data }: { data: Data }) => {
 ```
 
 **useMemo & useCallback**:
+
 ```tsx
 function ProductList({ products, category }: Props) {
   // ✅ Memoize filtered results
   const filteredProducts = useMemo(() => {
-    return products.filter(p => p.category === category);
+    return products.filter((p) => p.category === category);
   }, [products, category]);
 
   // ✅ Memoize callback
@@ -77,8 +79,12 @@ function ProductList({ products, category }: Props) {
 
   return (
     <div>
-      {filteredProducts.map(product => (
-        <ProductCard key={product.id} product={product} onAdd={handleAddToCart} />
+      {filteredProducts.map((product) => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          onAdd={handleAddToCart}
+        />
       ))}
     </div>
   );
@@ -86,13 +92,14 @@ function ProductList({ products, category }: Props) {
 ```
 
 **Lazy Loading & Code Splitting**:
+
 ```tsx
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense } from "react";
 
 // ✅ Route-based code splitting
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const Profile = lazy(() => import('./pages/Profile'));
-const Settings = lazy(() => import('./pages/Settings'));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Settings = lazy(() => import("./pages/Settings"));
 
 function App() {
   return (
@@ -107,7 +114,7 @@ function App() {
 }
 
 // ✅ Component-based lazy loading
-const HeavyChart = lazy(() => import('./components/HeavyChart'));
+const HeavyChart = lazy(() => import("./components/HeavyChart"));
 
 function Dashboard() {
   return (
@@ -124,6 +131,7 @@ function Dashboard() {
 ### Step 3: Optimize bundle size
 
 **Webpack Bundle Analyzer**:
+
 ```bash
 npm install --save-dev webpack-bundle-analyzer
 
@@ -136,19 +144,21 @@ npm install --save-dev webpack-bundle-analyzer
 ```
 
 **Tree Shaking (remove unused code)**:
+
 ```typescript
 // ❌ Bad: import entire library
-import _ from 'lodash';
+import _ from "lodash";
 
 // ✅ Good: import only what you need
-import debounce from 'lodash/debounce';
+import debounce from "lodash/debounce";
 ```
 
 **Dynamic Imports**:
+
 ```typescript
 // ✅ Load only when needed
-button.addEventListener('click', async () => {
-  const { default: Chart } = await import('chart.js');
+button.addEventListener("click", async () => {
+  const { default: Chart } = await import("chart.js");
   new Chart(ctx, config);
 });
 ```
@@ -156,8 +166,9 @@ button.addEventListener('click', async () => {
 ### Step 4: Optimize images
 
 **Next.js Image component**:
+
 ```tsx
-import Image from 'next/image';
+import Image from "next/image";
 
 function ProductImage() {
   return (
@@ -166,8 +177,8 @@ function ProductImage() {
       alt="Product"
       width={500}
       height={500}
-      priority  // for the LCP image
-      placeholder="blur"  // blur placeholder
+      priority // for the LCP image
+      placeholder="blur" // blur placeholder
       sizes="(max-width: 768px) 100vw, 50vw"
     />
   );
@@ -175,17 +186,19 @@ function ProductImage() {
 ```
 
 **Use WebP format**:
+
 ```html
 <picture>
-  <source srcset="image.webp" type="image/webp">
-  <source srcset="image.jpg" type="image/jpeg">
-  <img src="image.jpg" alt="Fallback">
+  <source srcset="image.webp" type="image/webp" />
+  <source srcset="image.jpg" type="image/jpeg" />
+  <img src="image.jpg" alt="Fallback" />
 </picture>
 ```
 
 ### Step 5: Optimize database queries
 
 **Fix the N+1 query problem**:
+
 ```typescript
 // ❌ Bad: N+1 queries
 const posts = await db.post.findMany();
@@ -197,13 +210,14 @@ for (const post of posts) {
 // ✅ Good: JOIN or include
 const posts = await db.post.findMany({
   include: {
-    author: true
-  }
+    author: true,
+  },
 });
 // 1 query
 ```
 
 **Add indexes**:
+
 ```sql
 -- Identify slow queries
 EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'test@example.com';
@@ -216,6 +230,7 @@ CREATE INDEX idx_orders_user_date ON orders(user_id, created_at);
 ```
 
 **Caching (Redis)**:
+
 ```typescript
 async function getUserProfile(userId: string) {
   // 1. Check cache
@@ -240,6 +255,7 @@ async function getUserProfile(userId: string) {
 
 ```markdown
 ## Frontend
+
 - [ ] Prevent unnecessary re-renders with React.memo
 - [ ] Use useMemo/useCallback appropriately
 - [ ] Lazy loading & Code splitting
@@ -247,6 +263,7 @@ async function getUserProfile(userId: string) {
 - [ ] Analyze and reduce bundle size
 
 ## Backend
+
 - [ ] Remove N+1 queries
 - [ ] Add database indexes
 - [ ] Redis caching
@@ -254,6 +271,7 @@ async function getUserProfile(userId: string) {
 - [ ] Use a CDN
 
 ## Measurement
+
 - [ ] Lighthouse score 90+
 - [ ] LCP < 2.5s
 - [ ] FID < 100ms
@@ -288,21 +306,26 @@ async function getUserProfile(userId: string) {
 ## Metadata
 
 ### Version
+
 - **Current version**: 1.0.0
 - **Last updated**: 2025-01-01
 - **Compatible platforms**: Claude, ChatGPT, Gemini
 
 ### Related skills
+
 - [database-schema-design](../database-schema-design/SKILL.md)
 - [ui-components](../ui-component-patterns/SKILL.md)
 
 ### Tags
+
 `#performance` `#optimization` `#React` `#caching` `#lazy-loading` `#web-vitals` `#code-quality`
 
 ## Examples
 
 ### Example 1: Basic usage
+
 <!-- Add example content here -->
 
 ### Example 2: Advanced usage
+
 <!-- Add advanced example content here -->
