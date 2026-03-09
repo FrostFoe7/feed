@@ -16,10 +16,12 @@ export default function ActivityPage() {
     api.notification.getNotification.useQuery();
 
   if (isLoading) return <Loading />;
-  if (isError) return <Error />;
+  if (isError || !data) return <Error />;
 
   const { notifications } = data;
-  const reversedNotifications = [...notifications].reverse();
+  const reversedNotifications = [...notifications]
+    .filter((n): n is typeof n & { senderUser: NonNullable<typeof n.senderUser> } => n.senderUser !== null)
+    .reverse();
 
   return (
     <>

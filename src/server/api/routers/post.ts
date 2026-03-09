@@ -5,7 +5,7 @@ import {
   privateProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import Filter from "bad-words";
+import { Filter } from "bad-words";
 import {
   getUserById,
   getPostById,

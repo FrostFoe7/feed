@@ -18,7 +18,7 @@ export default function ProfileLayout({ children }: PagesLayoutProps) {
   const { data, isLoading, isError } = api.user.Info.useQuery({ username });
 
   if (isLoading) return <Loading />;
-  if (isError) return <NotFound />;
+  if (isError || !data) return <NotFound />;
 
   return (
     <>

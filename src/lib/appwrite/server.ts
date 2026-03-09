@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 
 import { Client, Account, Databases, Storage, Users, ID, Query } from "node-appwrite";
 import { env } from "@/env.mjs";

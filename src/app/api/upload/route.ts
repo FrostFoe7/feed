@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSessionClient } from "@/lib/appwrite/server";
-import { InputFile } from "node-appwrite/file";
 import { ID } from "node-appwrite";
 import { STORAGE_BUCKET_ID } from "@/lib/appwrite/config";
 import { env } from "@/env.mjs";
@@ -50,7 +49,7 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(arrayBuffer);
 
     const fileId = ID.unique();
-    const inputFile = InputFile.fromBuffer(buffer, file.name);
+    const inputFile = new File([buffer], file.name, { type: file.type });
 
     await storage.createFile(STORAGE_BUCKET_ID, fileId, inputFile);
 

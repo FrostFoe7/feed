@@ -20,10 +20,8 @@ export function TRPCReactProvider(props: {
       new QueryClient({
         defaultOptions: {
           queries: {
-            cacheTime: Infinity,
             staleTime: 10 * 60 * 1000,
             refetchIntervalInBackground: true,
-            keepPreviousData: true,
           },
         },
       }),
@@ -31,9 +29,9 @@ export function TRPCReactProvider(props: {
 
   const [trpcClient] = useState(() =>
     api.createClient({
-      transformer,
       links: [
         httpBatchLink({
+          transformer,
           url: getUrl(),
           headers() {
             const heads = new Map(props.headers);

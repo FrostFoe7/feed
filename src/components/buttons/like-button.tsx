@@ -25,7 +25,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({ likeInfo, onLike }) => {
     setIsLiked(isLikedByMe);
   }, [isLikedByMe]);
 
-  const { mutate: toggleLike, isLoading } = api.like.toggleLike.useMutation({
+  const { mutate: toggleLike, isPending } = api.like.toggleLike.useMutation({
     onMutate: () => {
       const previousLiked = isLiked;
 
@@ -42,7 +42,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({ likeInfo, onLike }) => {
 
   return (
     <div className="flex items-center justify-center hover:bg-primary rounded-full p-2 w-fit h-fit active:scale-95">
-      <button disabled={isLoading}>
+      <button disabled={isPending}>
         <Icons.heart
           onClick={() => {
             onLike(isLiked);

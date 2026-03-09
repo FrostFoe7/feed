@@ -34,7 +34,7 @@ const RepostButton: React.FC<RepostButtonProps> = ({
     setIsReposted(isRepostedByMe);
   }, [isRepostedByMe]);
 
-  const { mutate: toggleRepost, isLoading } = api.post.toggleRepost.useMutation(
+  const { mutate: toggleRepost, isPending } = api.post.toggleRepost.useMutation(
     {
       onMutate: () => {
         const previousReposted = isReposted;
@@ -60,7 +60,7 @@ const RepostButton: React.FC<RepostButtonProps> = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          disabled={isLoading}
+          disabled={isPending}
           className="flex items-center justify-center hover:bg-primary rounded-full p-2 w-fit h-fit active:scale-95 outline-hidden"
         >
           {isReposted ? (
@@ -75,7 +75,7 @@ const RepostButton: React.FC<RepostButtonProps> = ({
         className="bg-background shadow-xl dark:bg-[#181818] rounded-2xl w-[190px] p-0"
       >
         <DropdownMenuItem
-          disabled={isLoading}
+          disabled={isPending}
           onClick={() => {
             toggleRepost({ id });
           }}

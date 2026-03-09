@@ -36,7 +36,7 @@ const FollowButton: React.FC<FollowButtonProps> = ({
 
   const trpcUtils = api.useUtils();
 
-  const { mutate: toggleFollow, isLoading } = api.user.toggleFollow.useMutation(
+  const { mutate: toggleFollow, isPending } = api.user.toggleFollow.useMutation(
     {
       onMutate: () => {
         const previousFollowed = isFollowed;
@@ -64,14 +64,14 @@ const FollowButton: React.FC<FollowButtonProps> = ({
     },
   );
 
-  const setVariant = variant === "default" ? "default" : "outline-solid";
+  const setVariant = variant === "default" ? "default" : "outline";
   return (
     <Follow
-      disabled={isLoading || isSameUser}
+      disabled={isPending || isSameUser}
       onClick={() => {
         toggleFollow({ id: author.id });
       }}
-      variant={!isFollowed ? setVariant : "outline-solid"}
+      variant={!isFollowed ? setVariant : "outline"}
       className={cn("rounded-xl py-1.5 px-4 select-none", className, {
         "opacity-80": isFollowed,
       })}

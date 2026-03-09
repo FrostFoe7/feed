@@ -63,7 +63,7 @@ const CreatePostCard: React.FC = ({}) => {
 
   const trpcUtils = api.useUtils();
 
-  const { isLoading, mutateAsync: createThread } =
+  const { isPending, mutateAsync: createThread } =
     api.post.createPost.useMutation({
       onMutate: ({}) => {
         setThreadData({
@@ -81,7 +81,7 @@ const CreatePostCard: React.FC = ({}) => {
       retry: false,
     });
 
-  const { isLoading: isReplying, mutateAsync: replyToPost } =
+  const { isPending: isReplying, mutateAsync: replyToPost } =
     api.post.replyToPost.useMutation({
       onError: (err) => {
         toast.error("ReplyingError: Something went wrong!");
@@ -218,12 +218,12 @@ const CreatePostCard: React.FC = ({}) => {
               disabled={
                 !isSelectedImageSafe ||
                 threadData.text === "" ||
-                isLoading ||
+                isPending ||
                 isReplying
               }
               className="select-none rounded-full bg-foreground px-4 font-semibold text-white hover:bg-foreground dark:text-black"
             >
-              {isLoading ||
+              {isPending ||
                 (isReplying && (
                   <Icons.spinner
                     className="mr-2 h-4 w-4 animate-spin"

@@ -41,14 +41,15 @@ function mapAccountToUser(
   const nameParts = (acct.name ?? "").split(" ");
   const firstName = nameParts[0] ?? null;
   const lastName = nameParts.slice(1).join(" ") || null;
+  const prefs = acct.prefs as Record<string, string | undefined>;
   return {
     ...acct,
     id: acct.$id,
     firstName,
     lastName,
     fullName: acct.name || null,
-    imageUrl: acct.prefs?.imageUrl ?? null,
-    username: acct.prefs?.username ?? acct.email?.split("@")[0] ?? null,
+    imageUrl: prefs.imageUrl ?? null,
+    username: prefs.username ?? acct.email?.split("@")[0] ?? null,
   };
 }
 

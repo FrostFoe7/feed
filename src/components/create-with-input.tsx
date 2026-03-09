@@ -14,7 +14,7 @@ const CreateWithInput: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
         <div className="w-full flex select-none">
           <Avatar className="rounded-full outline-solid outline-1 outline-border h-9 w-9 mr-4">
             <AvatarImage
-              src={user?.imageUrl}
+              src={user?.imageUrl ?? undefined}
               alt={user?.username ?? ""}
               className="object-cover"
             />

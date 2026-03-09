@@ -57,7 +57,7 @@ export default function AccountSetupForm({ username }: { username: string }) {
     });
   };
 
-  const { mutate: accountSetup, isLoading } = api.auth.accountSetup.useMutation(
+  const { mutate: accountSetup, isPending } = api.auth.accountSetup.useMutation(
     {
       onSuccess: ({ success, username }) => {
         if (success) {
@@ -157,7 +157,7 @@ export default function AccountSetupForm({ username }: { username: string }) {
                     </div>
                     <Avatar className="rounded-full outline-solid outline-1 outline-border h-12 w-12 ">
                       <AvatarImage
-                        src={user?.imageUrl}
+                        src={user?.imageUrl ?? undefined}
                         alt={user?.username ?? ""}
                         className="object-cover"
                       />
@@ -284,9 +284,9 @@ export default function AccountSetupForm({ username }: { username: string }) {
           <Button
             className="w-full mt-4 rounded-xl bg-foreground hover:bg-foreground select-none text-white dark:text-black"
             onClick={handleAccountSetup}
-            disabled={isLoading}
+            disabled={isPending}
           >
-            {isLoading && (
+            {isPending && (
               <Icons.spinner
                 className="mr-2 h-4 w-4 animate-spin"
                 aria-hidden="true"

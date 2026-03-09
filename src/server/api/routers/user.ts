@@ -57,7 +57,7 @@ export const userRouter = createTRPCRouter({
       if (!user) throw new TRPCError({ code: "NOT_FOUND" });
 
       const posts = await getUserPosts(user.$id, false);
-      const enriched = await enrichPosts(posts);
+      const enriched = await enrichPosts(posts ?? []);
       return enriched;
     }),
 
@@ -68,7 +68,7 @@ export const userRouter = createTRPCRouter({
       if (!user) throw new TRPCError({ code: "NOT_FOUND" });
 
       const replies = await getUserPosts(user.$id, true);
-      const enriched = await enrichPosts(replies);
+      const enriched = await enrichPosts(replies ?? []);
       return enriched;
     }),
 
@@ -79,7 +79,7 @@ export const userRouter = createTRPCRouter({
       if (!user) throw new TRPCError({ code: "NOT_FOUND" });
 
       const reposts = await getUserReposts(user.$id);
-      const enriched = await enrichPosts(reposts);
+      const enriched = await enrichPosts(reposts ?? []);
       return enriched;
     }),
 
@@ -111,7 +111,10 @@ export const userRouter = createTRPCRouter({
         fullname: u.fullname,
         image: u.image,
         bio: u.bio,
+        link: u.link,
+        isAdmin: u.isAdmin,
         createdAt: new Date(u.$createdAt),
+        followers: [] as { id: string; username: string; image: string | null }[],
       }));
 
       return {

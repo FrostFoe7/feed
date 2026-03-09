@@ -11,14 +11,14 @@ const ResizeTextarea: React.FC<TextareaProps> = ({ className, ...props }) => {
     textArea.style.height = `${textArea.scrollHeight}px`;
   }
 
-  const textAreaRef = React.useRef<HTMLTextAreaElement>();
+  const textAreaRef = React.useRef<HTMLTextAreaElement>(null);
   const inputRef = React.useCallback((textArea: HTMLTextAreaElement) => {
     updateTextAreaSize(textArea);
     textAreaRef.current = textArea;
   }, []);
 
   React.useLayoutEffect(() => {
-    updateTextAreaSize(textAreaRef.current);
+    updateTextAreaSize(textAreaRef.current ?? undefined);
   }, [props.value]);
 
   return (

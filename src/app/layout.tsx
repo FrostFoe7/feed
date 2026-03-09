@@ -69,15 +69,16 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const hdrs = await headers();
   return (
     <html lang="en">
       <body className={`font-sans no-scrollbar ${inter.variable}`}>
-        <TRPCReactProvider headers={headers()}>
+        <TRPCReactProvider headers={hdrs}>
           <AppWriteAuthProvider>
             <ThemeProvider
               attribute="class"

@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 
 import { createAdminClient, ID, Query } from "./server";
 import { DATABASE_ID, COLLECTIONS, STORAGE_BUCKET_ID } from "./config";
