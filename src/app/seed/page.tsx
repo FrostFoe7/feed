@@ -22,7 +22,7 @@ const SeedPage: React.FC = ({}) => {
       if (res) {
         toast.error("Created fake users.");
       }
-    } catch (error) {
+    } catch {
       toast.error("Something went wrong!");
     } finally {
       setIsLoading(null);
@@ -36,7 +36,7 @@ const SeedPage: React.FC = ({}) => {
       if (res) {
         toast.error("Created fake posts.");
       }
-    } catch (error) {
+    } catch {
       toast.error("Something went wrong!");
     } finally {
       setIsLoading(null);
@@ -50,7 +50,7 @@ const SeedPage: React.FC = ({}) => {
       if (res) {
         toast.error("Deleted fake users.");
       }
-    } catch (error) {
+    } catch {
       toast.error("Something went wrong!");
     } finally {
       setIsLoading(null);
@@ -64,7 +64,7 @@ const SeedPage: React.FC = ({}) => {
       if (res) {
         toast.error("Created fake notification.");
       }
-    } catch (error) {
+    } catch {
       toast.error("Something went wrong!");
     } finally {
       setIsLoading(null);
@@ -78,7 +78,7 @@ const SeedPage: React.FC = ({}) => {
   //       if (res) {
   //         toast.error("Renamed all usernames.");
   //       }
-  //     } catch (error) {
+  //     } catch {
   //       toast.error("Something went wrong!");
   //     } finally {
   //       setIsLoading(null);

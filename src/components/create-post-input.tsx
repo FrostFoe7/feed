@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import useFileStore from "@/store/fileStore";
 import { X } from "lucide-react";
 import Username from "@/components/user/user-username";
@@ -62,10 +63,8 @@ const CreatePostInput: React.FC<CreatePostInputProps> = ({
       setPreviewURL(previewURL);
 
       setSelectedFile(acceptedFiles);
-
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
-    [maxSize],
+    [setSelectedFile],
   );
 
   const accept: Accept = {
@@ -156,10 +155,13 @@ const CreatePostInput: React.FC<CreatePostInputProps> = ({
             />
             {previewURL && (
               <div className="relative overflow-hidden rounded-[12px] border border-border w-fit">
-                <img
+                <Image
                   src={previewURL}
-                  alt=""
-                  className="object-contain max-h-[520px] max-w-full rounded-[12px]"
+                  alt="Preview"
+                  width={1000}
+                  height={1000}
+                  unoptimized
+                  className="object-contain max-h-[520px] max-w-full rounded-[12px] h-auto w-full"
                 />
                 {/* TODO: Do this check on server side !*/}
                 {/* {!isSafeImage &&

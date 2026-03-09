@@ -28,29 +28,29 @@ const RepostButton: React.FC<RepostButtonProps> = ({
   createdAt,
   isRepostedByMe,
 }) => {
-  const repostUpdate = React.useRef({
-    isRepostedByMe,
-  });
+  const [isReposted, setIsReposted] = React.useState(isRepostedByMe);
+
+  React.useEffect(() => {
+    setIsReposted(isRepostedByMe);
+  }, [isRepostedByMe]);
 
   const { mutate: toggleRepost, isLoading } = api.post.toggleRepost.useMutation(
     {
       onMutate: () => {
-        const previousRepostByMe = repostUpdate.current.isRepostedByMe;
+        const previousReposted = isReposted;
 
-        repostUpdate.current.isRepostedByMe =
-          !repostUpdate.current.isRepostedByMe;
+        setIsReposted((prev) => !prev);
 
-        if (repostUpdate.current.isRepostedByMe === true) {
+        if (!previousReposted === true) {
           toast("Reposted");
         } else {
           toast("Removed");
         }
 
-        return { previousRepostByMe };
+        return { previousReposted };
       },
       onError: (error, variables, context) => {
-        repostUpdate.current.isRepostedByMe =
-          context?.previousRepostByMe ?? repostUpdate.current.isRepostedByMe;
+        setIsReposted(context?.previousReposted ?? isReposted);
         toast.error("RepostError: Something went wrong!");
       },
     },
@@ -63,7 +63,7 @@ const RepostButton: React.FC<RepostButtonProps> = ({
           disabled={isLoading}
           className="flex items-center justify-center hover:bg-primary rounded-full p-2 w-fit h-fit active:scale-95 outline-hidden"
         >
-          {repostUpdate.current.isRepostedByMe ? (
+          {isReposted ? (
             <Icons.reposted className="w-5 h-5 " />
           ) : (
             <Icons.repost className="w-5 h-5 " />
@@ -82,16 +82,15 @@ const RepostButton: React.FC<RepostButtonProps> = ({
           className={cn(
             "focus:bg-transparent px-4 tracking-normal select-none font-semibold py-3 cursor-pointer text-[15px]  active:bg-primary-foreground  rounded-none w-full justify-between",
             {
-              "text-red-600 focus:text-red-600":
-                repostUpdate.current.isRepostedByMe,
+              "text-red-600 focus:text-red-600": isReposted,
             },
           )}
         >
-          {repostUpdate.current.isRepostedByMe ? <>Remove</> : <>Repost</>}
+          {isReposted ? <>Remove</> : <>Repost</>}
 
           <Icons.repost
             className={cn("w-5 h-5 ", {
-              "text-red-600": repostUpdate.current.isRepostedByMe,
+              "text-red-600": isReposted,
             })}
           />
         </DropdownMenuItem>

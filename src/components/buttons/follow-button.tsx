@@ -28,31 +28,31 @@ const FollowButton: React.FC<FollowButtonProps> = ({
     (user) => user.id === loggedUser?.id,
   );
 
-  const followUpdate = React.useRef({
-    isFollowedByMe,
-  });
+  const [isFollowed, setIsFollowed] = React.useState(isFollowedByMe);
+
+  React.useEffect(() => {
+    setIsFollowed(isFollowedByMe);
+  }, [isFollowedByMe]);
 
   const trpcUtils = api.useUtils();
 
   const { mutate: toggleFollow, isLoading } = api.user.toggleFollow.useMutation(
     {
       onMutate: () => {
-        const previousFollowedByMe = followUpdate.current.isFollowedByMe;
+        const previousFollowed = isFollowed;
 
-        followUpdate.current.isFollowedByMe =
-          !followUpdate.current.isFollowedByMe;
+        setIsFollowed((prev) => !prev);
 
-        if (followUpdate.current.isFollowedByMe === true) {
+        if (!previousFollowed === true) {
           toast("Followed");
         } else {
           toast("Unfollowed");
         }
 
-        return { previousFollowedByMe };
+        return { previousFollowed };
       },
       onError: (error, variables, context) => {
-        followUpdate.current.isFollowedByMe =
-          context?.previousFollowedByMe ?? followUpdate.current.isFollowedByMe;
+        setIsFollowed(context?.previousFollowed ?? isFollowed);
         toast.error("FollowError: Something went wrong!");
       },
       onSettled: async () => {
@@ -71,14 +71,12 @@ const FollowButton: React.FC<FollowButtonProps> = ({
       onClick={() => {
         toggleFollow({ id: author.id });
       }}
-      variant={
-        !followUpdate.current.isFollowedByMe ? setVariant : "outline-solid"
-      }
+      variant={!isFollowed ? setVariant : "outline-solid"}
       className={cn("rounded-xl py-1.5 px-4 select-none", className, {
-        "opacity-80": followUpdate.current.isFollowedByMe,
+        "opacity-80": isFollowed,
       })}
     >
-      {followUpdate.current.isFollowedByMe ? "Following" : "Follow"}
+      {isFollowed ? "Following" : "Follow"}
     </Follow>
   );
 };

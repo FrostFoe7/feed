@@ -12,31 +12,43 @@ interface UserNotificationAvtarProps {
   type: NotificationType;
 }
 
+function enumToLower(enumValue: string): string {
+  return enumValue.toLowerCase();
+}
+
+const getIcon = (typeName: string) => {
+  switch (typeName) {
+    case "QUOTE":
+      return Icons.quote2;
+    case "REPLY":
+      return Icons.reply2;
+    case "REPOST":
+      return Icons.repost2;
+    default:
+      return Icons[enumToLower(typeName) as keyof typeof Icons];
+  }
+};
+
+const NotificationIcon = ({
+  type,
+  className,
+  fill,
+}: {
+  type: NotificationType;
+  className?: string;
+  fill?: string;
+}) => {
+  const Icon = getIcon(type);
+  if (!Icon) return null;
+  return React.createElement(Icon, { className, fill });
+};
+
 const UserNotificationAvtar: React.FC<UserNotificationAvtarProps> = ({
   username,
   image,
   fullname,
   type,
 }) => {
-  function enumToLower(enumValue: string): string {
-    return enumValue.toLowerCase();
-  }
-
-  const getIcon = (typeName: string) => {
-    switch (typeName) {
-      case "QUOTE":
-        return Icons.quote2;
-      case "REPLY":
-        return Icons.reply2;
-      case "REPOST":
-        return Icons.repost2;
-      default:
-        return Icons[enumToLower(typeName) as keyof typeof Icons];
-    }
-  };
-
-  const IconComponent = getIcon(type);
-
   return (
     <Link href={`/@${username}`}>
       <div className="outline-solid outline-1 outline-border rounded-full ml-px">
@@ -59,8 +71,12 @@ const UserNotificationAvtar: React.FC<UserNotificationAvtarProps> = ({
               },
             )}
           >
-            {type !== "ADMIN" && IconComponent && (
-              <IconComponent className="h-[20px] w-[20px]" fill="white" />
+            {type !== "ADMIN" && (
+              <NotificationIcon
+                type={type}
+                className="h-[20px] w-[20px]"
+                fill="white"
+              />
             )}
           </div>
         </Avatar>

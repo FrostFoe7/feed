@@ -16,31 +16,25 @@ interface LikeButtonProps {
 const LikeButton: React.FC<LikeButtonProps> = ({ likeInfo, onLike }) => {
   const { user: loggedUser } = useUser();
 
-  const { count, id, likes } = likeInfo;
+  const { id, likes } = likeInfo;
   const isLikedByMe = likes?.some((like) => like.userId === loggedUser?.id);
 
-  const likeUpdate = React.useRef({
-    isLikedByMe,
-    likeCount: count.likeCount,
-  });
+  const [isLiked, setIsLiked] = React.useState(isLikedByMe);
+
+  React.useEffect(() => {
+    setIsLiked(isLikedByMe);
+  }, [isLikedByMe]);
 
   const { mutate: toggleLike, isLoading } = api.like.toggleLike.useMutation({
     onMutate: () => {
-      const previousLikedByMe = likeUpdate.current.isLikedByMe;
-      const previousLikeCount = likeUpdate.current.likeCount;
+      const previousLiked = isLiked;
 
-      likeUpdate.current.isLikedByMe = !likeUpdate.current.isLikedByMe;
-      likeUpdate.current.likeCount = likeUpdate.current.isLikedByMe
-        ? likeUpdate.current.likeCount + 1
-        : likeUpdate.current.likeCount - 1;
+      setIsLiked((prev) => !prev);
 
-      return { previousLikedByMe, previousLikeCount };
+      return { previousLiked };
     },
     onError: (error, variables, context) => {
-      likeUpdate.current.isLikedByMe =
-        context?.previousLikedByMe ?? likeUpdate.current.isLikedByMe;
-      likeUpdate.current.likeCount =
-        context?.previousLikeCount ?? likeUpdate.current.likeCount;
+      setIsLiked(context?.previousLiked ?? isLiked);
 
       toast.error("Something went wrong!");
     },
@@ -51,12 +45,12 @@ const LikeButton: React.FC<LikeButtonProps> = ({ likeInfo, onLike }) => {
       <button disabled={isLoading}>
         <Icons.heart
           onClick={() => {
-            onLike(likeUpdate.current.isLikedByMe);
+            onLike(isLiked);
             toggleLike({ id });
           }}
-          fill={likeUpdate.current.isLikedByMe ? "#ff3040" : "transparent"}
+          fill={isLiked ? "#ff3040" : "transparent"}
           className={cn("w-5 h-5 ", {
-            "text-[#ff3040]": likeUpdate.current.isLikedByMe,
+            "text-[#ff3040]": isLiked,
           })}
         />
       </button>

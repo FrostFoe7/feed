@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import type { PostCardProps } from "@/types";
+import Image from "next/image";
 import React from "react";
 
 interface UserFollowersProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -21,10 +22,13 @@ const UserFollowers: React.FC<UserFollowersProps> = ({
               key={index}
               className="relative z-0 flex h-4 w-4 shrink-0 select-none items-center justify-center rounded-full ring-1 ring-border"
             >
-              <img
+              <Image
                 className="h-full w-full rounded-full object-cover object-center"
                 src={authorData.image ?? ""}
                 alt="Follower"
+                width={16}
+                height={16}
+                unoptimized
               />
             </div>
           ))}
