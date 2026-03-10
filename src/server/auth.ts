@@ -2,8 +2,9 @@
 import { NextAuthOptions, getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import bcrypt from "bcryptjs";
 import { getUserByEmail, createUser } from "@/lib/appwrite/db";
-import { ID, createAdminClient } from "@/lib/appwrite/server";
+import { ID } from "@/lib/appwrite/server";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -28,64 +29,67 @@ export const authOptions: NextAuthOptions = {
         }
 
         const mode = credentials.mode || "login";
-        const { account } = createAdminClient();
 
         if (mode === "register") {
+          // 1. Check if user exists in Database (manual collection)
           const existingUser = await getUserByEmail(credentials.email);
           if (existingUser) {
-            throw new Error("User already exists");
+            throw new Error("An account with this email already exists. Please log in.");
           }
 
           const userId = ID.unique();
           const username = credentials.username || credentials.email.split("@")[0] || "user";
+          const hashedPassword = await bcrypt.hash(credentials.password, 10);
 
-          // 1. Create user in Appwrite Auth
-          await account.create(userId, credentials.email, credentials.password, username);
-
-          // 2. Create user in Appwrite Database
-          await createUser({
-            id: userId,
-            email: credentials.email,
-            username,
-            fullname: username,
-            image: null,
-            verified: false,
-          });
-
-          // 3. Create a session to get the secret
-          const session = await account.createEmailPasswordSession(
-            credentials.email,
-            credentials.password
-          );
+          // 2. Create user document in Appwrite Database ONLY
+          try {
+            await createUser({
+              id: userId,
+              email: credentials.email,
+              username,
+              fullname: username,
+              password: hashedPassword,
+              image: null,
+              verified: false,
+            });
+          } catch (e: any) {
+            console.error("Database Create User Error:", e);
+            throw new Error(e.message || "Failed to create user record");
+          }
 
           return {
             id: userId,
             email: credentials.email,
             name: username,
-            secret: session.secret,
           };
         }
 
         // Login flow
         try {
-          const session = await account.createEmailPasswordSession(
-            credentials.email,
-            credentials.password
-          );
-          
+          // 1. Fetch user from Database collection
           const user = await getUserByEmail(credentials.email);
-          if (!user) {
-            throw new Error("User document not found");
+          if (!user || !user.password) {
+            throw new Error("Invalid email or password");
+          }
+
+          // 2. Compare hashed password
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
+
+          if (!isPasswordValid) {
+            throw new Error("Invalid email or password");
           }
 
           return {
             id: user.$id,
             email: user.email,
             name: user.username,
-            secret: session.secret,
           };
-        } catch {
-          throw new Error("Invalid credentials");
+        } catch (e: any) {
+          console.error("Manual Login Error:", e);
+          throw new Error(e.message || "Invalid credentials");
         }
       },
     }),
@@ -113,14 +117,12 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.secret = (user as any).secret || null;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).id = token.id;
-        (session.user as any).secret = token.secret;
       }
       return session;
     },

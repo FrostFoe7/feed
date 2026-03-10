@@ -78,7 +78,7 @@ export default async function RootLayout({
 }) {
   const hdrs = await headers();
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`font-sans no-scrollbar ${inter.variable}`}>
         <TRPCReactProvider headers={hdrs}>
           <NextAuthSessionProvider>
