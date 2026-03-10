@@ -3,10 +3,10 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import { type NextRequest } from "next/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { getServerAuthSession } from "@/server/auth";
+import { auth } from "@/auth";
 
 export const createTRPCContext = async (opts: { req: NextRequest }) => {
-  const session = await getServerAuthSession();
+  const session = await auth();
   return {
     headers: opts.req.headers,
     session,

@@ -1,89 +1,86 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextAuthOptions } from "next-auth";
-import { getServerSession } from "next-auth/next";
-import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
+import NextAuth, { type DefaultSession } from "next-auth";
+import Google from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { getUserByEmail, createUser } from "@/lib/appwrite/db";
 import { ID } from "@/lib/appwrite/server";
+import { authConfig } from "./auth.config";
 
-export const authOptions: NextAuthOptions = {
-  session: {
-    strategy: "jwt",
-  },
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user: {
+      id: string;
+    } & DefaultSession["user"];
+  }
+}
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET,
     }),
-    CredentialsProvider({
+    Credentials({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
         username: { label: "Username", type: "text" },
-        mode: { label: "Mode", type: "text" }, // "login" or "register"
+        mode: { label: "Mode", type: "text" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Missing email or password");
+          return null;
         }
 
-        const mode = credentials.mode || "login";
+        const mode = (credentials.mode as string) || "login";
 
         if (mode === "register") {
-          // 1. Check if user exists in Database (manual collection)
-          const existingUser = await getUserByEmail(credentials.email);
+          const existingUser = await getUserByEmail(credentials.email as string);
           if (existingUser) {
-            throw new Error(
-              "An account with this email already exists. Please log in.",
-            );
+            throw new Error("An account with this email already exists.");
           }
 
           const userId = ID.unique();
-          const username =
-            credentials.username || credentials.email.split("@")[0] || "user";
-          const hashedPassword = await bcrypt.hash(credentials.password, 10);
+          const username = (credentials.username as string) || (credentials.email as string).split("@")[0] || "user";
+          const hashedPassword = await bcrypt.hash(credentials.password as string, 10);
 
-          // 2. Create user document in Appwrite Database ONLY
           try {
             await createUser({
               id: userId,
-              email: credentials.email,
+              email: credentials.email as string,
               username,
               fullname: username,
               password: hashedPassword,
               image: null,
               verified: false,
             });
-          } catch (e: any) {
+          } catch (e) {
             console.error("Database Create User Error:", e);
-            throw new Error(e.message || "Failed to create user record");
+            return null;
           }
 
           return {
             id: userId,
-            email: credentials.email,
+            email: credentials.email as string,
             name: username,
           };
         }
 
-        // Login flow
         try {
-          // 1. Fetch user from Database collection
-          const user = await getUserByEmail(credentials.email);
+          const user = await getUserByEmail(credentials.email as string);
           if (!user || !user.password) {
-            throw new Error("Invalid email or password");
+            return null;
           }
 
-          // 2. Compare hashed password
           const isPasswordValid = await bcrypt.compare(
-            credentials.password,
+            credentials.password as string,
             user.password,
           );
 
           if (!isPasswordValid) {
-            throw new Error("Invalid email or password");
+            return null;
           }
 
           return {
@@ -91,14 +88,15 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             name: user.username,
           };
-        } catch (e: any) {
+        } catch (e) {
           console.error("Manual Login Error:", e);
-          throw new Error(e.message || "Invalid credentials");
+          return null;
         }
       },
     }),
   ],
   callbacks: {
+    ...authConfig.callbacks,
     async signIn({ user, account }) {
       try {
         if (account?.provider === "google") {
@@ -121,10 +119,8 @@ export const authOptions: NextAuthOptions = {
           }
         }
         return true;
-      } catch (e: any) {
+      } catch (e) {
         console.error("NextAuth signIn callback error:", e);
-        // Returning false instead of throwing prevents a server crash (500)
-        // and instead redirects to the error page with ?error=AccessDenied
         return false;
       }
     },
@@ -135,16 +131,10 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        (session.user as any).id = token.id;
+      if (session.user && token.id) {
+        session.user.id = token.id as string;
       }
       return session;
     },
   },
-  pages: {
-    signIn: "/auth/signin",
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-};
-
-export const getServerAuthSession = () => getServerSession(authOptions);
+});

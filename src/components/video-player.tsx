@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import videojs from "video.js";
-import type Player from "video.js/dist/video.js";
 import "video.js/dist/video-js.css";
 import { PlayIcon, Volume2Icon, VolumeXIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -15,7 +14,7 @@ interface VideoPlayerProps {
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, className, poster }) => {
   const videoRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<Player | null>(null);
+  const playerRef = useRef<ReturnType<typeof videojs> | null>(null);
   const [isPaused, setIsPaused] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [isIntersecting, setIsIntersecting] = useState(false);
