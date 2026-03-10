@@ -135,7 +135,10 @@ const CreatePostInput: React.FC<CreatePostInputProps> = ({
 
   const removeFile = (index: number) => {
     const newPreviews = [...previewFiles];
-    URL.revokeObjectURL(newPreviews[index].url);
+    const previewToRemove = newPreviews[index];
+    if (previewToRemove) {
+      URL.revokeObjectURL(previewToRemove.url);
+    }
     newPreviews.splice(index, 1);
     setPreviewFiles(newPreviews);
 

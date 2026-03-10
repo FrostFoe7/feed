@@ -37,12 +37,20 @@ const PostMediaCard: React.FC<PostMediaCardProps> = ({ images }) => {
       return;
     }
 
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap() + 1);
-
-    api.on("select", () => {
+    requestAnimationFrame(() => {
+      setCount(api.scrollSnapList().length);
       setCurrent(api.selectedScrollSnap() + 1);
     });
+
+    const onSelect = () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    };
+
+    api.on("select", onSelect);
+
+    return () => {
+      api.off("select", onSelect);
+    };
   }, [api]);
 
   if (!images || images.length === 0) return null;

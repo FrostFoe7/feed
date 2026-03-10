@@ -12,7 +12,6 @@ import StarOnGithub from "@/components/star-on-github";
 import useDialog from "@/store/dialog";
 import CreateWithInput from "@/components/create-with-input";
 import { Skeleton } from "@/components/ui/skeleton";
-import HomeTabs from "@/components/home-tabs";
 
 const FollowingPage: React.FC = () => {
   const { setOpenDialog } = useDialog();

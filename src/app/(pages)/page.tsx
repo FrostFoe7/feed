@@ -13,8 +13,6 @@ import useDialog from "@/store/dialog";
 import CreateWithInput from "@/components/create-with-input";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import HomeTabs from "@/components/home-tabs";
-
 const HomePage: React.FC = () => {
   const { setOpenDialog } = useDialog();
 
