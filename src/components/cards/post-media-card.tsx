@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useImageStore } from "@/store/image";
 import { getOptimizedImageUrl, cn } from "@/lib/utils";
 import Image from "next/image";
+import VideoPlayer from "@/components/video-player";
 
 import {
   Carousel,
@@ -13,14 +14,6 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
-
-import { MediaPlayer, MediaProvider } from "@vidstack/react";
-import {
-  defaultLayoutIcons,
-  DefaultVideoLayout,
-} from "@vidstack/react/player/layouts/default";
-import "@vidstack/react/player/styles/default/theme.css";
-import "@vidstack/react/player/styles/default/layouts/video.css";
 
 interface PostMediaCardProps {
   images: string[] | undefined;
@@ -87,14 +80,7 @@ const PostMediaCard: React.FC<PostMediaCardProps> = ({ images }) => {
                   }}
                 >
                   {isVideo ? (
-                    <MediaPlayer
-                      src={url}
-                      className="w-full h-full"
-                      style={{ objectFit: "cover" }}
-                    >
-                      <MediaProvider />
-                      <DefaultVideoLayout icons={defaultLayoutIcons} />
-                    </MediaPlayer>
+                    <VideoPlayer src={url} className="w-full h-full object-cover" />
                   ) : (
                     <Image
                       loading="lazy"

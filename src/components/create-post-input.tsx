@@ -15,6 +15,7 @@ import type { ParentPostInfo } from "@/types";
 import PostQuoteCard from "@/components/cards/post-quote-card";
 import PostMediaCard from "@/components/cards/post-media-card";
 import { useDropzone, type Accept } from "react-dropzone";
+import VideoPlayer from "@/components/video-player";
 
 import {
   Carousel,
@@ -23,14 +24,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-
-import { MediaPlayer, MediaProvider } from "@vidstack/react";
-import {
-  defaultLayoutIcons,
-  DefaultVideoLayout,
-} from "@vidstack/react/player/layouts/default";
-import "@vidstack/react/player/styles/default/theme.css";
-import "@vidstack/react/player/styles/default/layouts/video.css";
 
 interface CreatePostInputProps {
   isOpen: boolean;
@@ -237,14 +230,7 @@ const CreatePostInput: React.FC<CreatePostInputProps> = ({
                               className="object-cover w-full h-full rounded-[12px]"
                             />
                           ) : (
-                            <MediaPlayer
-                              src={file.url}
-                              className="w-full h-full"
-                              style={{ objectFit: "cover" }}
-                            >
-                              <MediaProvider />
-                              <DefaultVideoLayout icons={defaultLayoutIcons} />
-                            </MediaPlayer>
+                            <VideoPlayer src={file.url} className="w-full h-full object-cover" />
                           )}
                           <Button
                             onClick={() => removeFile(index)}
