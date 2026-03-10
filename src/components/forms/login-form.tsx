@@ -40,7 +40,7 @@ export default function LoginForm() {
         });
 
         if (result?.ok) {
-          router.push("/");
+          router.push("/account?origin=/");
           router.refresh();
         } else {
           toast.error(

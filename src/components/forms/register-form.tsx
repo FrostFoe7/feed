@@ -46,7 +46,7 @@ export default function RegisterForm() {
         });
 
         if (result?.ok) {
-          router.push("/");
+          router.push("/account?origin=/");
           router.refresh();
         } else {
           toast.error(result?.error || "Registration failed. Please try again.");

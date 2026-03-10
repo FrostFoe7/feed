@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { api } from "@/trpc/react";
 import { Icons } from "@/components/icons";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { ResizeTextarea } from "@/components/ui/resize-textarea";
 import { useUser } from "@/components/providers/auth-provider";
@@ -37,6 +37,8 @@ type UserSetupProps = {
 export default function AccountSetupForm({ username }: { username: string }) {
   const { user } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const origin = searchParams.get("origin");
 
   const [showPrivacyPage, setShowPrivacyPage] = React.useState(false);
 

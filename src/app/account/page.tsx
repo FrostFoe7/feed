@@ -9,9 +9,9 @@ export default async function AccountPage() {
 
   if (!user || !user.email) redirect("/login");
 
-  const isVerifiedUser = await getUserByEmail(user.email);
+  const dbUser = await getUserByEmail(user.email);
 
-  if (isVerifiedUser) redirect("/");
+  if (dbUser && dbUser.verified) redirect("/");
 
   const username = (await generateUsername(user.email)) ?? "";
 

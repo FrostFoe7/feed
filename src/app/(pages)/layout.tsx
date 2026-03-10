@@ -15,7 +15,7 @@ export default async function PagesLayout({ children }: PagesLayoutProps) {
 
   const dbUser = await getUserByEmail(user.email);
 
-  if (!dbUser) redirect("/account?origin=/");
+  if (!dbUser || !dbUser.verified) redirect("/account?origin=/");
 
   return (
     <>

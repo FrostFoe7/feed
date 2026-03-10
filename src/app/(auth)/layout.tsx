@@ -4,13 +4,22 @@ import QRcode from "@/components/qr-code";
 import { getLoggedInUser } from "@/lib/appwrite/session";
 import { redirect } from "next/navigation";
 
+import { getUserByEmail } from "@/lib/appwrite/db";
+
 interface AuthLayoutProps {
   children: React.ReactNode;
 }
 
 export default async function AuthLayout({ children }: AuthLayoutProps) {
   const user = await getLoggedInUser();
-  if (user) redirect("/");
+
+  if (user && user.email) {
+    const dbUser = await getUserByEmail(user.email);
+    if (!dbUser || !dbUser.verified) {
+      redirect("/account?origin=/");
+    }
+    redirect("/");
+  }
 
   return (
     <>

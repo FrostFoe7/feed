@@ -108,7 +108,7 @@ export const authOptions: NextAuthOptions = {
             username,
             fullname: user.name || username,
             image: user.image || null,
-            verified: true,
+            verified: false,
           });
         }
       }

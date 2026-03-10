@@ -11,7 +11,7 @@ const OAuthLogin: React.FC = ({}) => {
   async function oauthSignIn() {
     try {
       setIsLoading(true);
-      await signIn("google", { callbackUrl: "/" });
+      await signIn("google", { callbackUrl: "/account?origin=/" });
     } catch (error) {
       setIsLoading(false);
       console.error("OAuth login error:", error);
