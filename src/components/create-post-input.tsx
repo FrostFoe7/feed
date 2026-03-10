@@ -231,12 +231,13 @@ const CreatePostInput: React.FC<CreatePostInputProps> = ({
                               width={1000}
                               height={1000}
                               unoptimized
-                              className="object-contain max-h-[520px] max-w-full rounded-[12px] h-auto w-full"
+                              className="object-cover w-full h-full rounded-[12px]"
                             />
                           ) : (
                             <MediaPlayer
                               src={file.url}
                               className="w-full h-full"
+                              style={{ objectFit: "cover" }}
                             >
                               <MediaProvider />
                               <DefaultVideoLayout icons={defaultLayoutIcons} />

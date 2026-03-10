@@ -45,7 +45,11 @@ const PostMediaCard: React.FC<PostMediaCardProps> = ({ images }) => {
                   }}
                 >
                   {isVideo ? (
-                    <MediaPlayer src={url} className="w-full h-full">
+                    <MediaPlayer
+                      src={url}
+                      className="w-full h-full"
+                      style={{ objectFit: "cover" }}
+                    >
                       <MediaProvider />
                       <DefaultVideoLayout icons={defaultLayoutIcons} />
                     </MediaPlayer>
@@ -56,7 +60,7 @@ const PostMediaCard: React.FC<PostMediaCardProps> = ({ images }) => {
                       width={630}
                       height={630}
                       alt="Thread media"
-                      className="object-contain max-h-[520px] w-max rounded-[12px]"
+                      className="object-cover w-full h-full rounded-[12px]"
                       unoptimized={url.startsWith("blob:")}
                     />
                   )}
