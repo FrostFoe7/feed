@@ -1,14 +1,10 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import ReactPlayer from "react-player";
-import {
-  MediaController,
-  MediaControlBar,
-  MediaTimeRange,
-  MediaMuteButton,
-  MediaPlayButton,
-} from "media-chrome/react";
+import "@vidstack/react/player/styles/default/theme.css";
+import "@vidstack/react/player/styles/default/layouts/video.css";
+import { MediaPlayer, MediaProvider, Poster, type MediaPlayerInstance } from "@vidstack/react";
+import { defaultLayoutIcons, DefaultVideoLayout } from "@vidstack/react/player/layouts/default";
 import { cn } from "@/lib/utils";
 
 interface VideoPlayerProps {
@@ -20,6 +16,7 @@ interface VideoPlayerProps {
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, className, poster }) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<MediaPlayerInstance>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -36,32 +33,40 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, className, poster }) => 
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (!playerRef.current) return;
+
+    if (isIntersecting) {
+      playerRef.current.play();
+    } else {
+      playerRef.current.pause();
+    }
+  }, [isIntersecting]);
+
   return (
     <div 
       ref={containerRef}
       className={cn("relative overflow-hidden bg-black w-full h-full group", className)}
     >
-      <MediaController className="w-full h-full">
-        <ReactPlayer
-          slot="media"
-          url={src}
-          playing={isIntersecting}
-          muted={true}
-          loop={true}
-          playsinline={true}
-          width="100%"
-          height="100%"
-          style={{ objectFit: "cover" }}
-          light={poster}
-        />
+      <MediaPlayer
+        ref={playerRef}
+        src={src}
+        className="w-full h-full"
+        playsInline
+        muted
+        loop
+        crossOrigin
+        load="visible"
+      >
+        <MediaProvider className="w-full h-full">
+          {poster && <Poster src={poster} alt="Video Poster" className="vds-poster" />}
+        </MediaProvider>
         
-        {/* Custom Minimal Control Bar - visible on hover like Threads */}
-        <MediaControlBar className="bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute bottom-0 left-0 right-0 h-12 flex items-center px-2">
-          <MediaPlayButton className="text-white hover:bg-white/10 rounded-full" />
-          <MediaMuteButton className="text-white hover:bg-white/10 rounded-full" />
-          <MediaTimeRange className="flex-1 mx-2" />
-        </MediaControlBar>
-      </MediaController>
+        <DefaultVideoLayout 
+          icons={defaultLayoutIcons} 
+          className="vds-layout transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+        />
+      </MediaPlayer>
     </div>
   );
 };
