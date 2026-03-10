@@ -110,7 +110,12 @@ export async function createUser(data: {
 
 export async function updateUser(id: string, data: any) {
   const { databases } = createAdminClient();
-  return await databases.updateDocument(DATABASE_ID, COLLECTIONS.USERS, id, data);
+  return await databases.updateDocument(
+    DATABASE_ID,
+    COLLECTIONS.USERS,
+    id,
+    data,
+  );
 }
 
 export async function getUserById(id: string) {
@@ -125,33 +130,25 @@ export async function getUserById(id: string) {
 
 export async function getUserByEmail(email: string) {
   const { databases } = createAdminClient();
-  const result = await databases.listDocuments(
-    DATABASE_ID,
-    COLLECTIONS.USERS,
-    [Query.equal("email", email), Query.limit(1)],
-  );
+  const result = await databases.listDocuments(DATABASE_ID, COLLECTIONS.USERS, [
+    Query.equal("email", email),
+    Query.limit(1),
+  ]);
   return (result.documents[0] as unknown as AppWriteUser) ?? null;
 }
 
 export async function getUserByUsername(username: string) {
   const { databases } = createAdminClient();
-  const result = await databases.listDocuments(
-    DATABASE_ID,
-    COLLECTIONS.USERS,
-    [Query.equal("username", username), Query.limit(1)],
-  );
+  const result = await databases.listDocuments(DATABASE_ID, COLLECTIONS.USERS, [
+    Query.equal("username", username),
+    Query.limit(1),
+  ]);
   return (result.documents[0] as unknown as AppWriteUser) ?? null;
 }
 
-export async function getAllUsers(
-  limit = 10,
-  cursor?: string,
-) {
+export async function getAllUsers(limit = 10, cursor?: string) {
   const { databases } = createAdminClient();
-  const queries = [
-    Query.orderDesc("$createdAt"),
-    Query.limit(limit + 1),
-  ];
+  const queries = [Query.orderDesc("$createdAt"), Query.limit(limit + 1)];
   if (cursor) {
     queries.push(Query.cursorAfter(cursor));
   }
@@ -280,11 +277,7 @@ export async function createPost(data: {
 export async function getPostById(id: string) {
   try {
     const { databases } = createAdminClient();
-    const doc = await databases.getDocument(
-      DATABASE_ID,
-      COLLECTIONS.POSTS,
-      id,
-    );
+    const doc = await databases.getDocument(DATABASE_ID, COLLECTIONS.POSTS, id);
     return doc as unknown as AppWritePost;
   } catch {
     return null;
@@ -307,11 +300,9 @@ export async function deletePostById(id: string, authorId: string) {
   }
 
   // Delete associated likes
-  const likes = await databases.listDocuments(
-    DATABASE_ID,
-    COLLECTIONS.LIKES,
-    [Query.equal("postId", id)],
-  );
+  const likes = await databases.listDocuments(DATABASE_ID, COLLECTIONS.LIKES, [
+    Query.equal("postId", id),
+  ]);
   for (const like of likes.documents) {
     await databases.deleteDocument(DATABASE_ID, COLLECTIONS.LIKES, like.$id);
   }
@@ -401,15 +392,11 @@ export async function getUserPosts(userId: string, parentOnly = true) {
 
 export async function getPostReplies(postId: string) {
   const { databases } = createAdminClient();
-  const result = await databases.listDocuments(
-    DATABASE_ID,
-    COLLECTIONS.POSTS,
-    [
-      Query.equal("parentPostId", postId),
-      Query.orderDesc("$createdAt"),
-      Query.limit(50),
-    ],
-  );
+  const result = await databases.listDocuments(DATABASE_ID, COLLECTIONS.POSTS, [
+    Query.equal("parentPostId", postId),
+    Query.orderDesc("$createdAt"),
+    Query.limit(50),
+  ]);
   return result.documents as unknown as AppWritePost[];
 }
 
@@ -431,11 +418,10 @@ export async function getParentChain(postId: string): Promise<AppWritePost[]> {
 
 export async function getPostLikes(postId: string) {
   const { databases } = createAdminClient();
-  const result = await databases.listDocuments(
-    DATABASE_ID,
-    COLLECTIONS.LIKES,
-    [Query.equal("postId", postId), Query.limit(500)],
-  );
+  const result = await databases.listDocuments(DATABASE_ID, COLLECTIONS.LIKES, [
+    Query.equal("postId", postId),
+    Query.limit(500),
+  ]);
   return result.documents as unknown as AppWriteLike[];
 }
 
@@ -446,15 +432,11 @@ export async function getLikeCount(postId: string) {
 
 export async function findLike(postId: string, userId: string) {
   const { databases } = createAdminClient();
-  const result = await databases.listDocuments(
-    DATABASE_ID,
-    COLLECTIONS.LIKES,
-    [
-      Query.equal("postId", postId),
-      Query.equal("userId", userId),
-      Query.limit(1),
-    ],
-  );
+  const result = await databases.listDocuments(DATABASE_ID, COLLECTIONS.LIKES, [
+    Query.equal("postId", postId),
+    Query.equal("userId", userId),
+    Query.limit(1),
+  ]);
   return result.documents[0] as unknown as AppWriteLike | undefined;
 }
 
@@ -533,7 +515,11 @@ export async function getUserReposts(userId: string) {
   const result = await databases.listDocuments(
     DATABASE_ID,
     COLLECTIONS.REPOSTS,
-    [Query.equal("userId", userId), Query.orderDesc("$createdAt"), Query.limit(50)],
+    [
+      Query.equal("userId", userId),
+      Query.orderDesc("$createdAt"),
+      Query.limit(50),
+    ],
   );
 
   const reposts = result.documents as unknown as AppWriteRepost[];
@@ -581,7 +567,10 @@ export async function getNotifications(userId: string) {
     COLLECTIONS.NOTIFICATIONS,
     [
       Query.or([
-        Query.and([Query.equal("isPublic", true), Query.equal("type", "ADMIN")]),
+        Query.and([
+          Query.equal("isPublic", true),
+          Query.equal("type", "ADMIN"),
+        ]),
         Query.and([
           Query.equal("isPublic", false),
           Query.equal("type", "ADMIN"),
@@ -630,11 +619,7 @@ export async function deleteNotification(id: string) {
 
 export async function uploadFile(file: File) {
   const { storage } = createAdminClient();
-  const result = await storage.createFile(
-    STORAGE_BUCKET_ID,
-    ID.unique(),
-    file,
-  );
+  const result = await storage.createFile(STORAGE_BUCKET_ID, ID.unique(), file);
   return result;
 }
 

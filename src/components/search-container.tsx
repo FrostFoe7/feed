@@ -95,7 +95,10 @@ const DisplaySearchedResults: React.FC<DisplaySearchedResultsProps> = ({
           <button className="mx-5 ">
             <div className="h-9 w-9 outline-solid outline-1  outline-border rounded-full">
               <Avatar className="rounded-full w-full h-full">
-                <AvatarImage src={getOptimizedImageUrl(user.image ?? "", 100)} alt={user.fullname ?? ""} />
+                <AvatarImage
+                  src={getOptimizedImageUrl(user.image ?? "", 100)}
+                  alt={user.fullname ?? ""}
+                />
                 <AvatarFallback>OG</AvatarFallback>
               </Avatar>
             </div>

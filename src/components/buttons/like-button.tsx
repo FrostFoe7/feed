@@ -17,13 +17,14 @@ const LikeButton: React.FC<LikeButtonProps> = ({ likeInfo, onLike }) => {
   const { user: loggedUser } = useUser();
 
   const { id, likes } = likeInfo;
-  const isLikedByMe = likes?.some((like) => like.userId === loggedUser?.id) ?? false;
+  const isLikedByMe =
+    likes?.some((like) => like.userId === loggedUser?.id) ?? false;
 
   const [optimisticLike, addOptimisticLike] = useOptimistic(
     isLikedByMe,
-    (state: boolean, newLikeState: boolean) => newLikeState
+    (state: boolean, newLikeState: boolean) => newLikeState,
   );
-  
+
   const [isPending, startTransition] = useTransition();
   const trpcUtils = api.useUtils();
 

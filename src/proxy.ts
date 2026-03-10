@@ -12,7 +12,11 @@ export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Allow public routes and profile routes (@username)
-  if (isPublicRoute(pathname) || pathname.startsWith("/@") || pathname === "/") {
+  if (
+    isPublicRoute(pathname) ||
+    pathname.startsWith("/@") ||
+    pathname === "/"
+  ) {
     return NextResponse.next();
   }
 

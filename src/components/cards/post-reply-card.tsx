@@ -16,7 +16,7 @@ import PostActivityCard from "@/components/cards/post-activity-card";
 import { cn, formatTimeAgo, getOptimizedImageUrl } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import PostImageCard from "@/components/cards/post-image-card";
+import PostMediaCard from "@/components/cards/post-media-card";
 import PostQuoteCard from "@/components/cards/post-quote-card";
 import ReplyButton from "@/components/buttons/reply-button";
 
@@ -148,7 +148,7 @@ const PostReplyCard: React.FC<PostReplyCardProps> = ({
               />
 
               {images && images.length > 0 && (
-                <PostImageCard image={images[0]} />
+                <PostMediaCard images={images} />
               )}
 
               {quoteId && (

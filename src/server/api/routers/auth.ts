@@ -41,7 +41,8 @@ export const authRouter = createTRPCRouter({
 
       // If user doesn't exist (though they should have been created at register)
       const email = user.email!;
-      const usernameFromEmail = email.split("@")[0]?.replace(/[+.]/g, "") ?? "user";
+      const usernameFromEmail =
+        email.split("@")[0]?.replace(/[+.]/g, "") ?? "user";
       const fullname = user.name || usernameFromEmail;
 
       const createdUser = await createUser({

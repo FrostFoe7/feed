@@ -1,6 +1,12 @@
 import React from "react";
 import Link from "next/link";
-type NotificationType = "ADMIN" | "LIKE" | "REPLY" | "FOLLOW" | "REPOST" | "QUOTE";
+type NotificationType =
+  | "ADMIN"
+  | "LIKE"
+  | "REPLY"
+  | "FOLLOW"
+  | "REPOST"
+  | "QUOTE";
 import { Icons } from "@/components/icons";
 import { cn, getOptimizedImageUrl } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";

@@ -47,12 +47,19 @@ export const userRouter = createTRPCRouter({
           privacy: user.privacy,
           createdAt: new Date(user.$createdAt),
           isAdmin: user.isAdmin,
-          followers: followers.map((f: { $id: string; image: string | null; username: string; fullname: string | null }) => ({
-            id: f.$id,
-            image: f.image,
-            username: f.username,
-            fullname: f.fullname,
-          })),
+          followers: followers.map(
+            (f: {
+              $id: string;
+              image: string | null;
+              username: string;
+              fullname: string | null;
+            }) => ({
+              id: f.$id,
+              image: f.image,
+              username: f.username,
+              fullname: f.fullname,
+            }),
+          ),
         },
       };
     }),
@@ -121,7 +128,11 @@ export const userRouter = createTRPCRouter({
         link: u.link,
         isAdmin: u.isAdmin,
         createdAt: new Date(u.$createdAt),
-        followers: [] as { id: string; username: string; image: string | null }[],
+        followers: [] as {
+          id: string;
+          username: string;
+          image: string | null;
+        }[],
       }));
 
       return {

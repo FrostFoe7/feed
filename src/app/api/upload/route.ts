@@ -21,18 +21,30 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate file type and size
-    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "video/mp4",
+      "video/webm",
+      "video/ogg",
+      "video/quicktime",
+    ];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: "Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed." },
+        {
+          error:
+            "Invalid file type. Only JPEG, PNG, GIF, WebP, MP4, WebM, OGG, and MOV are allowed.",
+        },
         { status: 400 },
       );
     }
 
-    const maxSize = 4 * 1024 * 1024; // 4MB
+    const maxSize = 50 * 1024 * 1024; // 50MB
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "File too large. Maximum size is 4MB." },
+        { error: "File too large. Maximum size is 50MB." },
         { status: 400 },
       );
     }
@@ -48,14 +60,11 @@ export async function POST(req: NextRequest) {
 
     await storage.createFile(STORAGE_BUCKET_ID, fileId, inputFile);
 
-    const fileUrl = `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${STORAGE_BUCKET_ID}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
+    const fileUrl = `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${STORAGE_BUCKET_ID}/files/${fileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}${file.type.startsWith("video/") ? "&type=video" : ""}`;
 
     return NextResponse.json({ url: fileUrl, fileId });
   } catch (error) {
     console.error("Upload error:", error);
-    return NextResponse.json(
-      { error: "Upload failed" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }

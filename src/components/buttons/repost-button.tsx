@@ -30,22 +30,20 @@ const RepostButton: React.FC<RepostButtonProps> = ({
 }) => {
   const [optimisticReposted, addOptimisticReposted] = useOptimistic(
     isRepostedByMe,
-    (state: boolean, newRepostState: boolean) => newRepostState
+    (state: boolean, newRepostState: boolean) => newRepostState,
   );
   const [isPending, startTransition] = useTransition();
 
   const trpcUtils = api.useUtils();
 
-  const { mutateAsync: toggleRepost } = api.post.toggleRepost.useMutation(
-    {
-      onSuccess: () => {
-        trpcUtils.post.getInfinitePost.invalidate();
-      },
-      onError: () => {
-        toast.error("RepostError: Something went wrong!");
-      },
+  const { mutateAsync: toggleRepost } = api.post.toggleRepost.useMutation({
+    onSuccess: () => {
+      trpcUtils.post.getInfinitePost.invalidate();
     },
-  );
+    onError: () => {
+      toast.error("RepostError: Something went wrong!");
+    },
+  });
 
   const handleRepost = () => {
     const newState = !optimisticReposted;

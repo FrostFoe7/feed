@@ -6,15 +6,31 @@ import useFileStore from "@/store/fileStore";
 import { X } from "lucide-react";
 import Username from "@/components/user/user-username";
 import { ResizeTextarea } from "@/components/ui/resize-textarea";
-import { cn, getOptimizedImageUrl } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import UserAvatar from "@/components/user/user-avatar";
 import { useUser } from "@/components/providers/auth-provider";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import type { ParentPostInfo } from "@/types";
 import PostQuoteCard from "@/components/cards/post-quote-card";
-import PostImageCard from "@/components/cards/post-image-card";
+import PostMediaCard from "@/components/cards/post-media-card";
 import { useDropzone, type Accept } from "react-dropzone";
+
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
+import { MediaPlayer, MediaProvider } from "@vidstack/react";
+import {
+  defaultLayoutIcons,
+  DefaultVideoLayout,
+} from "@vidstack/react/player/layouts/default";
+import "@vidstack/react/player/styles/default/theme.css";
+import "@vidstack/react/player/styles/default/layouts/video.css";
 
 interface CreatePostInputProps {
   isOpen: boolean;
@@ -25,6 +41,23 @@ interface CreatePostInputProps {
     | null;
 }
 
+interface PreviewFile {
+  url: string;
+  type: "image" | "video";
+}
+
+const getVideoDuration = (file: File): Promise<number> => {
+  return new Promise((resolve) => {
+    const video = document.createElement("video");
+    video.preload = "metadata";
+    video.onloadedmetadata = () => {
+      window.URL.revokeObjectURL(video.src);
+      resolve(video.duration);
+    };
+    video.src = URL.createObjectURL(file);
+  });
+};
+
 const CreatePostInput: React.FC<CreatePostInputProps> = ({
   isOpen,
   replyThreadInfo,
@@ -32,7 +65,7 @@ const CreatePostInput: React.FC<CreatePostInputProps> = ({
   quoteInfo,
 }) => {
   const { user } = useUser();
-  const { setSelectedFile } = useFileStore();
+  const { selectedFile, setSelectedFile } = useFileStore();
 
   const [inputValue, setInputValue] = React.useState("");
 
@@ -44,37 +77,50 @@ const CreatePostInput: React.FC<CreatePostInputProps> = ({
     onTextareaChange(newValue);
   };
 
-  const [previewURL, setPreviewURL] = React.useState<string | undefined>(
-    undefined,
-  );
+  const [previewFiles, setPreviewFiles] = React.useState<PreviewFile[]>([]);
 
-  const maxSize = 4 * 1024 * 1024;
+  const maxSize = 50 * 1024 * 1024; // 50MB for videos
 
   const onDrop = React.useCallback(
-    (acceptedFiles: File[]) => {
-      const acceptedFile = acceptedFiles[0];
+    async (acceptedFiles: File[]) => {
+      const validFiles: File[] = [];
 
-      if (!acceptedFile) {
-        alert("Selected image is too large!");
-        return;
+      for (const file of acceptedFiles) {
+        if (file.type.startsWith("video/")) {
+          const duration = await getVideoDuration(file);
+          if (duration > 59) {
+            alert(`Video ${file.name} is longer than 59 seconds!`);
+            continue;
+          }
+        }
+        validFiles.push(file);
       }
 
-      const previewURL = URL.createObjectURL(acceptedFile);
-      setPreviewURL(previewURL);
+      if (validFiles.length === 0) return;
 
-      setSelectedFile(acceptedFiles);
+      const newPreviews = validFiles.map((file) => ({
+        url: URL.createObjectURL(file),
+        type: (file.type.startsWith("video/") ? "video" : "image") as
+          | "image"
+          | "video",
+      }));
+
+      setPreviewFiles((prev) => [...prev, ...newPreviews]);
+      setSelectedFile([...selectedFile, ...validFiles]);
     },
-    [setSelectedFile],
+    [setSelectedFile, selectedFile],
   );
 
   const accept: Accept = {
     "image/*": [],
+    "video/*": [],
   };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept,
     maxSize,
+    multiple: true,
   });
 
   const scrollDownRef = React.useRef<HTMLDivElement | null>(null);
@@ -86,6 +132,24 @@ const CreatePostInput: React.FC<CreatePostInputProps> = ({
       inline: "start",
     });
   }, [isOpen]);
+
+  const removeFile = (index: number) => {
+    const newPreviews = [...previewFiles];
+    URL.revokeObjectURL(newPreviews[index].url);
+    newPreviews.splice(index, 1);
+    setPreviewFiles(newPreviews);
+
+    const newFiles = [...selectedFile];
+    newFiles.splice(index, 1);
+    setSelectedFile(newFiles);
+  };
+
+  React.useEffect(() => {
+    if (!isOpen) {
+      previewFiles.forEach((file) => URL.revokeObjectURL(file.url));
+      setPreviewFiles([]);
+    }
+  }, [isOpen, previewFiles]);
 
   return (
     <div
@@ -141,7 +205,7 @@ const CreatePostInput: React.FC<CreatePostInputProps> = ({
               />
             </div>
             {replyThreadInfo?.images && replyThreadInfo?.images?.length > 0 && (
-              <PostImageCard image={replyThreadInfo.images[0]} />
+              <PostMediaCard images={replyThreadInfo.images} />
             )}
           </>
         ) : (
@@ -153,33 +217,49 @@ const CreatePostInput: React.FC<CreatePostInputProps> = ({
               placeholder="Start a thread..."
               maxLength={200}
             />
-            {previewURL && (
-              <div className="relative overflow-hidden rounded-[12px] border border-border w-fit">
-                <Image
-                  src={getOptimizedImageUrl(previewURL, 800)}
-                  alt="Preview"
-                  width={1000}
-                  height={1000}
-                  unoptimized
-                  className="object-contain max-h-[520px] max-w-full rounded-[12px] h-auto w-full"
-                />
-                {/* TODO: Do this check on server side !*/}
-                {/* {!isSafeImage &&
-                                    <div className='absolute top-0 left-0 w-full h-full backdrop-blur-xl flex justify-center items-center'>
-                                        <EyeOff className='h-8 w-8 text-[#3b3b3b]' />
-                                    </div>
-                                } */}
-                <Button
-                  onClick={() => {
-                    // setIsSafeImage(true)
-                    setSelectedFile([]);
-                    setPreviewURL("");
-                  }}
-                  variant={"ghost"}
-                  className="h-6 w-6 p-1 absolute top-2 right-2 z-50 rounded-full transform active:scale-75 transition-transform cursor-pointer bg-background "
-                >
-                  <X />
-                </Button>
+            {previewFiles.length > 0 && (
+              <div className="mt-3 w-full">
+                <Carousel className="w-full">
+                  <CarouselContent>
+                    {previewFiles.map((file, index) => (
+                      <CarouselItem key={index} className="basis-full">
+                        <div className="relative overflow-hidden rounded-[12px] border border-border w-full aspect-video flex items-center justify-center bg-black/5">
+                          {file.type === "image" ? (
+                            <Image
+                              src={file.url}
+                              alt="Preview"
+                              width={1000}
+                              height={1000}
+                              unoptimized
+                              className="object-contain max-h-[520px] max-w-full rounded-[12px] h-auto w-full"
+                            />
+                          ) : (
+                            <MediaPlayer
+                              src={file.url}
+                              className="w-full h-full"
+                            >
+                              <MediaProvider />
+                              <DefaultVideoLayout icons={defaultLayoutIcons} />
+                            </MediaPlayer>
+                          )}
+                          <Button
+                            onClick={() => removeFile(index)}
+                            variant={"ghost"}
+                            className="h-6 w-6 p-1 absolute top-2 right-2 z-50 rounded-full transform active:scale-75 transition-transform cursor-pointer bg-background"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  {previewFiles.length > 1 && (
+                    <>
+                      <CarouselPrevious className="left-2" />
+                      <CarouselNext className="right-2" />
+                    </>
+                  )}
+                </Carousel>
               </div>
             )}
           </>

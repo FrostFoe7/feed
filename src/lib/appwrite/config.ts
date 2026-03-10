@@ -1,15 +1,13 @@
 // AppWrite collection and database IDs
 // These must match the collections created in your AppWrite Console
 
-export const DATABASE_ID =
-  process.env.APPWRITE_DATABASE_ID ?? "threads_db";
+export const DATABASE_ID = process.env.APPWRITE_DATABASE_ID ?? "threads_db";
 export const STORAGE_BUCKET_ID =
   process.env.APPWRITE_BUCKET_POST_IMAGES ??
   process.env.APPWRITE_STORAGE_BUCKET_ID ??
   "post_images";
 
-export const BUCKET_AVATARS =
-  process.env.APPWRITE_BUCKET_AVATARS ?? "avatars";
+export const BUCKET_AVATARS = process.env.APPWRITE_BUCKET_AVATARS ?? "avatars";
 
 // Collection IDs
 export const COLLECTIONS = {

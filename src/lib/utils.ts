@@ -82,7 +82,11 @@ export function truncateText(text: string, maxLength: number) {
   }
 }
 
-export function getOptimizedImageUrl(url: string, width?: number, quality: number = 80) {
+export function getOptimizedImageUrl(
+  url: string,
+  width?: number,
+  quality: number = 80,
+) {
   if (!url) return "";
   if (url.includes("/view?project=")) {
     let optimizedUrl = url.replace("/view?project=", "/preview?project=");

@@ -34,11 +34,14 @@ export const authOptions: NextAuthOptions = {
           // 1. Check if user exists in Database (manual collection)
           const existingUser = await getUserByEmail(credentials.email);
           if (existingUser) {
-            throw new Error("An account with this email already exists. Please log in.");
+            throw new Error(
+              "An account with this email already exists. Please log in.",
+            );
           }
 
           const userId = ID.unique();
-          const username = credentials.username || credentials.email.split("@")[0] || "user";
+          const username =
+            credentials.username || credentials.email.split("@")[0] || "user";
           const hashedPassword = await bcrypt.hash(credentials.password, 10);
 
           // 2. Create user document in Appwrite Database ONLY
@@ -75,7 +78,7 @@ export const authOptions: NextAuthOptions = {
           // 2. Compare hashed password
           const isPasswordValid = await bcrypt.compare(
             credentials.password,
-            user.password
+            user.password,
           );
 
           if (!isPasswordValid) {
@@ -101,7 +104,10 @@ export const authOptions: NextAuthOptions = {
 
         const existingUser = await getUserByEmail(user.email);
         if (!existingUser) {
-          const username = user.name?.replace(/\s+/g, "").toLowerCase() || user.email.split("@")[0] || "user";
+          const username =
+            user.name?.replace(/\s+/g, "").toLowerCase() ||
+            user.email.split("@")[0] ||
+            "user";
           await createUser({
             id: ID.unique(),
             email: user.email,

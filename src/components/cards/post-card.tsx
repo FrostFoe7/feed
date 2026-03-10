@@ -15,7 +15,7 @@ import Username from "@/components/user/user-username";
 import PostActivityCard from "@/components/cards/post-activity-card";
 import PostQuoteCard from "@/components/cards/post-quote-card";
 import LikeButton from "@/components/buttons/like-button";
-import PostImageCard from "@/components/cards/post-image-card";
+import PostMediaCard from "@/components/cards/post-media-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import ReplyButton from "@/components/buttons/reply-button";
@@ -116,7 +116,7 @@ const PostCard: React.FC<PostCardProps> = ({
               </Link>
 
               {images && images.length > 0 && (
-                <PostImageCard image={images[0]} />
+                <PostMediaCard images={images} />
               )}
 
               {quoteId && <PostQuoteCard quoteId={quoteId} />}

@@ -20,7 +20,10 @@ export default function ActivityPage() {
 
   const { notifications } = data;
   const reversedNotifications = [...notifications]
-    .filter((n): n is typeof n & { senderUser: NonNullable<typeof n.senderUser> } => n.senderUser !== null)
+    .filter(
+      (n): n is typeof n & { senderUser: NonNullable<typeof n.senderUser> } =>
+        n.senderUser !== null,
+    )
     .reverse();
 
   return (

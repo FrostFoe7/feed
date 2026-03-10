@@ -87,7 +87,9 @@ export const likeRouter = createTRPCRouter({
       );
 
       return {
-        likes: likeUsers.filter(Boolean) as NonNullable<(typeof likeUsers)[number]>[],
+        likes: likeUsers.filter(Boolean) as NonNullable<
+          (typeof likeUsers)[number]
+        >[],
         reposts: reposts.map((r) => ({ userId: r.userId })),
       };
     }),

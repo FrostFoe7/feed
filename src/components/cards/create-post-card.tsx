@@ -12,11 +12,7 @@ import usePost from "@/store/post";
 import PostPrivacyMenu from "@/components/menus/post-privacy-menu";
 import CreatePostInput from "@/components/create-post-input";
 import Link from "next/link";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import useDialog from "@/store/dialog";
 import { Check } from "lucide-react";
 import CreateButton from "@/components/buttons/create-button";
@@ -31,7 +27,7 @@ async function uploadFileToAppWrite(file: File): Promise<string | undefined> {
   });
 
   if (!res.ok) return undefined;
-  const data = await res.json() as { url: string };
+  const data = (await res.json()) as { url: string };
   return data.url;
 }
 
@@ -40,12 +36,12 @@ const CreatePostCard: React.FC = ({}) => {
   const path = usePathname();
 
   const {
-  openDialog,
-  setOpenDialog,
-  replyPostInfo,
-  setReplyPostInfo,
-  quoteInfo,
-  setQuoteInfo,
+    openDialog,
+    setOpenDialog,
+    replyPostInfo,
+    setReplyPostInfo,
+    quoteInfo,
+    setQuoteInfo,
   } = useDialog();
 
   const { selectedFile, setSelectedFile } = useFileStore();
@@ -101,23 +97,24 @@ const CreatePostCard: React.FC = ({}) => {
     });
 
   async function handleMutation() {
-    const checkUploadedImage = selectedFile[0];
+    const imageUrls: string[] = [];
 
-    const imgRes = checkUploadedImage
-      ? await uploadFileToAppWrite(checkUploadedImage)
-      : undefined;
+    for (const file of selectedFile) {
+      const url = await uploadFileToAppWrite(file);
+      if (url) imageUrls.push(url);
+    }
 
     const promise = replyPostInfo
       ? replyToPost({
           text: JSON.stringify(threadData.text, null, 2),
           postId: replyPostInfo.id,
-          imageUrl: imgRes,
+          imageUrls: imageUrls,
           privacy: threadData.privacy,
           postAuthor: replyPostInfo.author.id,
         })
       : createThread({
           text: JSON.stringify(threadData.text, null, 2),
-          imageUrl: imgRes,
+          imageUrls: imageUrls,
           privacy: threadData.privacy,
           quoteId: quoteInfo?.id,
           postAuthor: quoteInfo?.author.id,
@@ -208,11 +205,7 @@ const CreatePostCard: React.FC = ({}) => {
             <Button
               size={"sm"}
               onClick={handleCreateThread}
-              disabled={
-                threadData.text === "" ||
-                isPending ||
-                isReplying
-              }
+              disabled={threadData.text === "" || isPending || isReplying}
               className="select-none rounded-full bg-foreground px-4 font-semibold text-white hover:bg-foreground dark:text-black"
             >
               {isPending ||

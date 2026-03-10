@@ -24,31 +24,28 @@ const FollowButton: React.FC<FollowButtonProps> = ({
   const { user: loggedUser } = useUser();
 
   const isSameUser = author.id === loggedUser?.id;
-  const isFollowedByMe = author.followers?.some(
-    (user) => user.id === loggedUser?.id,
-  ) ?? false;
+  const isFollowedByMe =
+    author.followers?.some((user) => user.id === loggedUser?.id) ?? false;
 
   const [optimisticFollowed, addOptimisticFollowed] = useOptimistic(
     isFollowedByMe,
-    (state: boolean, newFollowState: boolean) => newFollowState
+    (state: boolean, newFollowState: boolean) => newFollowState,
   );
   const [isPending, startTransition] = useTransition();
 
   const trpcUtils = api.useUtils();
 
-  const { mutateAsync: toggleFollow } = api.user.toggleFollow.useMutation(
-    {
-      onError: () => {
-        toast.error("FollowError: Something went wrong!");
-      },
-      onSettled: async () => {
-        if (path === "/") {
-          await trpcUtils.post.getInfinitePost.invalidate();
-        }
-        await trpcUtils.invalidate();
-      },
+  const { mutateAsync: toggleFollow } = api.user.toggleFollow.useMutation({
+    onError: () => {
+      toast.error("FollowError: Something went wrong!");
     },
-  );
+    onSettled: async () => {
+      if (path === "/") {
+        await trpcUtils.post.getInfinitePost.invalidate();
+      }
+      await trpcUtils.invalidate();
+    },
+  });
 
   const handleFollow = () => {
     const newState = !optimisticFollowed;

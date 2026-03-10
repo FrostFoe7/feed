@@ -56,7 +56,8 @@ const COL = {
   LIKES: process.env.APPWRITE_COLLECTION_LIKES ?? "likes",
   REPOSTS: process.env.APPWRITE_COLLECTION_REPOSTS ?? "reposts",
   FOLLOWS: process.env.APPWRITE_COLLECTION_FOLLOWS ?? "follows",
-  NOTIFICATIONS: process.env.APPWRITE_COLLECTION_NOTIFICATIONS ?? "notifications",
+  NOTIFICATIONS:
+    process.env.APPWRITE_COLLECTION_NOTIFICATIONS ?? "notifications",
   REPORTS: process.env.APPWRITE_COLLECTION_REPORTS ?? "reports",
 } as const;
 
@@ -76,7 +77,10 @@ function info(msg: string) {
 }
 
 /** Try to create; if 409 (already exists), skip gracefully. */
-async function tryCreate<T>(label: string, fn: () => Promise<T>): Promise<T | null> {
+async function tryCreate<T>(
+  label: string,
+  fn: () => Promise<T>,
+): Promise<T | null> {
   try {
     const result = await fn();
     log(label);
@@ -105,7 +109,10 @@ async function waitForAttributes(
   const POLL_INTERVAL = 1500;
 
   while (Date.now() - startTime < maxWaitMs) {
-    const { attributes } = await databases.listAttributes(databaseId, collectionId);
+    const { attributes } = await databases.listAttributes(
+      databaseId,
+      collectionId,
+    );
     const pending = (attributes as Array<{ status: string }>).filter(
       (a) => a.status === "processing",
     );
@@ -130,12 +137,28 @@ async function waitForAttributes(
 // ─── Attribute Creators ───────────────────────────────────────
 
 type AttrDef =
-  | { type: "string"; key: string; size: number; required: boolean; array?: boolean }
+  | {
+      type: "string";
+      key: string;
+      size: number;
+      required: boolean;
+      array?: boolean;
+    }
   | { type: "boolean"; key: string; required: boolean; default?: boolean }
   | { type: "email"; key: string; required: boolean }
-  | { type: "enum"; key: string; elements: string[]; required: boolean; default?: string };
+  | {
+      type: "enum";
+      key: string;
+      elements: string[];
+      required: boolean;
+      default?: string;
+    };
 
-async function createAttributes(databaseId: string, collectionId: string, attrs: AttrDef[]) {
+async function createAttributes(
+  databaseId: string,
+  collectionId: string,
+  attrs: AttrDef[],
+) {
   for (const attr of attrs) {
     const label = `${collectionId}.${attr.key}`;
     switch (attr.type) {
@@ -197,11 +220,60 @@ type IdxDef = {
   attributes: string[];
 };
 
-async function createIndexes(databaseId: string, collectionId: string, indexes: IdxDef[]) {
+async function createIndexes(
+  databaseId: string,
+  collectionId: string,
+  indexes: IdxDef[],
+) {
   for (const idx of indexes) {
     await tryCreate(`index ${collectionId}.${idx.key}`, () =>
-      databases.createIndex(databaseId, collectionId, idx.key, idx.type, idx.attributes),
+      databases.createIndex(
+        databaseId,
+        collectionId,
+        idx.key,
+        idx.type,
+        idx.attributes,
+      ),
     );
+  }
+}
+
+async function createOrUpdateBucket(
+  id: string,
+  name: string,
+  permissions: string[],
+  fileSecurity: boolean,
+  enabled: boolean,
+  maxFileSize: number,
+  allowedExtensions: string[],
+) {
+  try {
+    await storage.createBucket(
+      id,
+      name,
+      permissions,
+      fileSecurity,
+      enabled,
+      maxFileSize,
+      allowedExtensions,
+    );
+    log(`Bucket "${id}" created`);
+  } catch (err: unknown) {
+    const e = err as { code?: number };
+    if (e.code === 409) {
+      await storage.updateBucket(
+        id,
+        name,
+        permissions,
+        fileSecurity,
+        enabled,
+        maxFileSize,
+        allowedExtensions,
+      );
+      log(`Bucket "${id}" updated`);
+    } else {
+      throw err;
+    }
   }
 }
 
@@ -250,7 +322,13 @@ async function main() {
     { type: "string", key: "link", size: 2048, required: false },
     { type: "email", key: "email", required: true },
     { type: "boolean", key: "verified", required: false, default: false },
-    { type: "enum", key: "privacy", elements: ["PUBLIC", "PRIVATE"], required: false, default: "PUBLIC" },
+    {
+      type: "enum",
+      key: "privacy",
+      elements: ["PUBLIC", "PRIVATE"],
+      required: false,
+      default: "PUBLIC",
+    },
     { type: "boolean", key: "isAdmin", required: false, default: false },
     { type: "string", key: "password", size: 256, required: false },
   ]);
@@ -263,7 +341,13 @@ async function main() {
     { type: "string", key: "images", size: 2048, required: false, array: true },
     { type: "string", key: "parentPostId", size: 128, required: false },
     { type: "string", key: "quoteId", size: 128, required: false },
-    { type: "enum", key: "privacy", elements: ["ANYONE", "FOLLOWED", "MENTIONED"], required: false, default: "ANYONE" },
+    {
+      type: "enum",
+      key: "privacy",
+      elements: ["ANYONE", "FOLLOWED", "MENTIONED"],
+      required: false,
+      default: "ANYONE",
+    },
   ]);
 
   // ─── Likes ──────────────────────────────────────────────────
@@ -291,7 +375,12 @@ async function main() {
   info("Creating Notifications attributes...");
   await createAttributes(DATABASE_ID, COL.NOTIFICATIONS, [
     { type: "boolean", key: "read", required: false, default: false },
-    { type: "enum", key: "type", elements: ["ADMIN", "LIKE", "REPLY", "FOLLOW", "REPOST", "QUOTE"], required: true },
+    {
+      type: "enum",
+      key: "type",
+      elements: ["ADMIN", "LIKE", "REPLY", "FOLLOW", "REPOST", "QUOTE"],
+      required: true,
+    },
     { type: "string", key: "message", size: 4096, required: true },
     { type: "boolean", key: "isPublic", required: false, default: false },
     { type: "string", key: "senderUserId", size: 128, required: true },
@@ -329,34 +418,62 @@ async function main() {
   // Posts indexes
   await createIndexes(DATABASE_ID, COL.POSTS, [
     { key: "idx_authorId", type: IndexType.Key, attributes: ["authorId"] },
-    { key: "idx_parentPostId", type: IndexType.Key, attributes: ["parentPostId"] },
+    {
+      key: "idx_parentPostId",
+      type: IndexType.Key,
+      attributes: ["parentPostId"],
+    },
     { key: "idx_createdAt", type: IndexType.Key, attributes: ["$createdAt"] },
   ]);
 
   // Likes indexes (composite unique to prevent duplicate likes)
   await createIndexes(DATABASE_ID, COL.LIKES, [
-    { key: "idx_postId_userId", type: IndexType.Unique, attributes: ["postId", "userId"] },
+    {
+      key: "idx_postId_userId",
+      type: IndexType.Unique,
+      attributes: ["postId", "userId"],
+    },
     { key: "idx_postId", type: IndexType.Key, attributes: ["postId"] },
     { key: "idx_userId", type: IndexType.Key, attributes: ["userId"] },
   ]);
 
   // Reposts indexes
   await createIndexes(DATABASE_ID, COL.REPOSTS, [
-    { key: "idx_postId_userId", type: IndexType.Unique, attributes: ["postId", "userId"] },
+    {
+      key: "idx_postId_userId",
+      type: IndexType.Unique,
+      attributes: ["postId", "userId"],
+    },
     { key: "idx_userId", type: IndexType.Key, attributes: ["userId"] },
   ]);
 
   // Follows indexes (composite unique to prevent duplicate follows)
   await createIndexes(DATABASE_ID, COL.FOLLOWS, [
-    { key: "idx_followerId_followingId", type: IndexType.Unique, attributes: ["followerId", "followingId"] },
+    {
+      key: "idx_followerId_followingId",
+      type: IndexType.Unique,
+      attributes: ["followerId", "followingId"],
+    },
     { key: "idx_followerId", type: IndexType.Key, attributes: ["followerId"] },
-    { key: "idx_followingId", type: IndexType.Key, attributes: ["followingId"] },
+    {
+      key: "idx_followingId",
+      type: IndexType.Key,
+      attributes: ["followingId"],
+    },
   ]);
 
   // Notifications indexes
   await createIndexes(DATABASE_ID, COL.NOTIFICATIONS, [
-    { key: "idx_receiverUserId", type: IndexType.Key, attributes: ["receiverUserId"] },
-    { key: "idx_senderUserId", type: IndexType.Key, attributes: ["senderUserId"] },
+    {
+      key: "idx_receiverUserId",
+      type: IndexType.Key,
+      attributes: ["receiverUserId"],
+    },
+    {
+      key: "idx_senderUserId",
+      type: IndexType.Key,
+      attributes: ["senderUserId"],
+    },
     { key: "idx_createdAt", type: IndexType.Key, attributes: ["$createdAt"] },
   ]);
 
@@ -377,28 +494,24 @@ async function main() {
     Permission.delete(Role.users()),
   ];
 
-  await tryCreate(`Bucket "${BUCKET.AVATARS}"`, () =>
-    storage.createBucket(
-      BUCKET.AVATARS,
-      "Avatars",
-      bucketPerms,
-      true,   // fileSecurity
-      true,   // enabled
-      10 * 1024 * 1024, // 10 MB max
-      ["jpg", "jpeg", "png", "gif", "webp", "svg"],
-    ),
+  await createOrUpdateBucket(
+    BUCKET.AVATARS,
+    "Avatars",
+    bucketPerms,
+    true, // fileSecurity
+    true, // enabled
+    10 * 1024 * 1024, // 10 MB max
+    ["jpg", "jpeg", "png", "gif", "webp", "svg"],
   );
 
-  await tryCreate(`Bucket "${BUCKET.POST_IMAGES}"`, () =>
-    storage.createBucket(
-      BUCKET.POST_IMAGES,
-      "Post Images",
-      bucketPerms,
-      true,   // fileSecurity
-      true,   // enabled
-      10 * 1024 * 1024, // 10 MB max
-      ["jpg", "jpeg", "png", "gif", "webp"],
-    ),
+  await createOrUpdateBucket(
+    BUCKET.POST_IMAGES,
+    "Post Media",
+    bucketPerms,
+    true, // fileSecurity
+    true, // enabled
+    50 * 1024 * 1024, // 50 MB max
+    ["jpg", "jpeg", "png", "gif", "webp", "mp4", "webm", "ogg", "mov"],
   );
 
   // ── 7. Output .env block ────────────────────────────────────

@@ -49,12 +49,13 @@ export default function LoginForm() {
         }
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : "Something went wrong, please try again later.";
+          err instanceof Error
+            ? err.message
+            : "Something went wrong, please try again later.";
         toast.error(message);
       }
     });
   }
-
 
   return (
     <div>

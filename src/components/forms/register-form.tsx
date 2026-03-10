@@ -49,7 +49,9 @@ export default function RegisterForm() {
           router.push("/account?origin=/");
           router.refresh();
         } else {
-          toast.error(result?.error || "Registration failed. Please try again.");
+          toast.error(
+            result?.error || "Registration failed. Please try again.",
+          );
         }
       } catch (err) {
         console.error("Registration error:", err);
@@ -73,7 +75,7 @@ export default function RegisterForm() {
                 <Input
                   className={cn(
                     "h-14 rounded-xl bg-[#1e1e1e] border-none focus-visible:ring-1 focus-visible:ring-[#393939] text-white",
-                    formState.errors.email && "focus-visible:ring-red-700"
+                    formState.errors.email && "focus-visible:ring-red-700",
                   )}
                   placeholder="Email"
                   type="email"
@@ -92,7 +94,7 @@ export default function RegisterForm() {
                 <Input
                   className={cn(
                     "h-14 rounded-xl bg-[#1e1e1e] border-none focus-visible:ring-1 focus-visible:ring-[#393939] text-white",
-                    formState.errors.username && "focus-visible:ring-red-700"
+                    formState.errors.username && "focus-visible:ring-red-700",
                   )}
                   placeholder="Username"
                   type="text"
@@ -111,7 +113,7 @@ export default function RegisterForm() {
                 <Input
                   className={cn(
                     "h-14 rounded-xl bg-[#1e1e1e] border-none focus-visible:ring-1 focus-visible:ring-[#393939] text-white",
-                    formState.errors.password && "focus-visible:ring-red-700"
+                    formState.errors.password && "focus-visible:ring-red-700",
                   )}
                   placeholder="Password"
                   type="password"
@@ -126,11 +128,7 @@ export default function RegisterForm() {
           disabled={isPending}
           className="h-14 rounded-xl my-1 font-semibold bg-white hover:bg-white text-black w-full"
         >
-          {isPending ? (
-            <Icons.loading className="h-10 w-10" />
-          ) : (
-            "Sign up"
-          )}
+          {isPending ? <Icons.loading className="h-10 w-10" /> : "Sign up"}
         </Button>
       </form>
     </Form>

@@ -30,8 +30,10 @@ export const postRouter = createTRPCRouter({
   createPost: privateProcedure
     .input(
       z.object({
-        text: z.string().min(3, { message: "Text must be at least 3 characters" }),
-        imageUrl: z.string().optional(),
+        text: z
+          .string()
+          .min(3, { message: "Text must be at least 3 characters" }),
+        imageUrls: z.array(z.string()).optional(),
         privacy: z.enum(["ANYONE", "FOLLOWED", "MENTIONED"]).default("ANYONE"),
         quoteId: z.string().optional(),
         postAuthor: z.string().optional(),
@@ -46,7 +48,7 @@ export const postRouter = createTRPCRouter({
       const newPost = await dbCreatePost({
         authorId: userId,
         text: filteredText,
-        images: input.imageUrl ? [input.imageUrl] : [],
+        images: input.imageUrls ?? [],
         privacy: input.privacy,
         quoteId: input.quoteId,
       });
@@ -133,12 +135,19 @@ export const postRouter = createTRPCRouter({
               fullname: user.fullname,
               image: user.image,
               bio: user.bio,
-              followers: followers.map((f: { $id: string; image: string | null; username: string; fullname: string | null }) => ({
-                id: f.$id,
-                image: f.image,
-                username: f.username,
-                fullname: f.fullname,
-              })),
+              followers: followers.map(
+                (f: {
+                  $id: string;
+                  image: string | null;
+                  username: string;
+                  fullname: string | null;
+                }) => ({
+                  id: f.$id,
+                  image: f.image,
+                  username: f.username,
+                  fullname: f.fullname,
+                }),
+              ),
             },
           };
         }),
@@ -149,7 +158,9 @@ export const postRouter = createTRPCRouter({
           const rAuthor = await getUserById(reply.authorId);
           const rLikes = await getPostLikes(reply.$id);
           const rReplies = await getPostReplies(reply.$id);
-          const rAuthorFollowers = rAuthor ? await getFollowers(rAuthor.$id) : [];
+          const rAuthorFollowers = rAuthor
+            ? await getFollowers(rAuthor.$id)
+            : [];
           return {
             id: reply.$id,
             text: reply.text,
@@ -204,8 +215,10 @@ export const postRouter = createTRPCRouter({
       z.object({
         postAuthor: z.string(),
         postId: z.string(),
-        text: z.string().min(3, { message: "Text must be at least 3 characters" }),
-        imageUrl: z.string().optional(),
+        text: z
+          .string()
+          .min(3, { message: "Text must be at least 3 characters" }),
+        imageUrls: z.array(z.string()).optional(),
         privacy: z.enum(["ANYONE", "FOLLOWED", "MENTIONED"]),
       }),
     )
@@ -218,7 +231,7 @@ export const postRouter = createTRPCRouter({
       const repliedPost = await dbCreatePost({
         authorId: userId,
         text: filteredText,
-        images: input.imageUrl ? [input.imageUrl] : [],
+        images: input.imageUrls ?? [],
         privacy: input.privacy,
         parentPostId: input.postId,
       });
