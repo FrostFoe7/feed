@@ -3,15 +3,15 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { loginWithEmail } from "@/lib/appwrite/auth-actions";
+import { Icons } from "@/components/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { cn } from "@/lib/utils";
 import { authSchema } from "@/lib/validations/auth";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { Icons } from "@/components/icons";
 import { toast } from "sonner";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
@@ -32,13 +32,19 @@ export default function LoginForm() {
   function onSubmit(data: Inputs) {
     startTransition(async () => {
       try {
-        const result = await loginWithEmail(data.identifier, data.password);
+        const result = await signIn("credentials", {
+          email: data.identifier,
+          password: data.password,
+          mode: "login",
+          redirect: false,
+        });
 
-        if (result.success) {
-          router.push(`${window.location.origin}/`);
+        if (result?.ok) {
+          router.push("/");
+          router.refresh();
         } else {
           toast.error(
-            "Sorry, something went wrong. Please try again, or refresh the page.",
+            result?.error || "Invalid credentials. Please try again.",
           );
         }
       } catch (err) {
@@ -48,6 +54,7 @@ export default function LoginForm() {
       }
     });
   }
+
 
   return (
     <div>

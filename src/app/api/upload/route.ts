@@ -1,19 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSessionClient } from "@/lib/appwrite/server";
+import { createAdminClient } from "@/lib/appwrite/server";
+import { getToken } from "next-auth/jwt";
 import { ID } from "node-appwrite";
+import { InputFile } from "node-appwrite/file";
 import { STORAGE_BUCKET_ID } from "@/lib/appwrite/config";
 
 export async function POST(req: NextRequest) {
   // Authenticate
-  const sessionCookie = req.cookies.get("appwrite-session")?.value;
-  if (!sessionCookie) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  try {
-    const { account } = createSessionClient(sessionCookie);
-    await account.get(); // Verify session is valid
-  } catch {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  if (!token) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -42,13 +37,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { storage } = createSessionClient(sessionCookie);
+    // Use Admin Client for storage operations because manual users are not Appwrite Auth users
+    const { storage } = createAdminClient();
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
     const fileId = ID.unique();
-    const inputFile = new File([buffer], file.name, { type: file.type });
+    const inputFile = InputFile.fromBuffer(buffer, file.name);
 
     await storage.createFile(STORAGE_BUCKET_ID, fileId, inputFile);
 

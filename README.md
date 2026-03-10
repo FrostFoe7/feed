@@ -27,7 +27,6 @@ This is an open source **threads-clone** build with **_`create-t3-app`_** and ev
 - Document-based database with **AppWrite**
 - Validation with **Zod**
 - Text filteration with **bad-words**
-- Image filteration with **nsfw-filter**
 - Custom notifications on user interactions
 - Custom component on top of **shadcn/ui**
 - Recursive thread chains

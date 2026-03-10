@@ -69,6 +69,8 @@ export const viewport: Viewport = {
   ],
 };
 
+import { NextAuthSessionProvider } from "@/components/providers/session-provider";
+
 export default async function RootLayout({
   children,
 }: {
@@ -79,20 +81,22 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`font-sans no-scrollbar ${inter.variable}`}>
         <TRPCReactProvider headers={hdrs}>
-          <AppWriteAuthProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="dark"
-              enableSystem
-              disableTransitionOnChange
-            >
-              {children}
-              <Toaster />
-              <Suspense fallback={<Loading />}>
-                <FullscreenImageView />
-              </Suspense>
-            </ThemeProvider>
-          </AppWriteAuthProvider>
+          <NextAuthSessionProvider>
+            <AppWriteAuthProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="dark"
+                enableSystem
+                disableTransitionOnChange
+              >
+                {children}
+                <Toaster />
+                <Suspense fallback={<Loading />}>
+                  <FullscreenImageView />
+                </Suspense>
+              </ThemeProvider>
+            </AppWriteAuthProvider>
+          </NextAuthSessionProvider>
         </TRPCReactProvider>
       </body>
     </html>

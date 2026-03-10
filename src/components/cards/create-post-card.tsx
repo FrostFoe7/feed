@@ -12,10 +12,13 @@ import usePost from "@/store/post";
 import PostPrivacyMenu from "@/components/menus/post-privacy-menu";
 import CreatePostInput from "@/components/create-post-input";
 import Link from "next/link";
-import { Check } from "lucide-react";
-import NSFWFilter from "nsfw-filter";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import useDialog from "@/store/dialog";
+import { Check } from "lucide-react";
 import CreateButton from "@/components/buttons/create-button";
 
 async function uploadFileToAppWrite(file: File): Promise<string | undefined> {
@@ -37,18 +40,17 @@ const CreatePostCard: React.FC = ({}) => {
   const path = usePathname();
 
   const {
-    openDialog,
-    setOpenDialog,
-    replyPostInfo,
-    setReplyPostInfo,
-    quoteInfo,
-    setQuoteInfo,
+  openDialog,
+  setOpenDialog,
+  replyPostInfo,
+  setReplyPostInfo,
+  quoteInfo,
+  setQuoteInfo,
   } = useDialog();
 
-  const { selectedFile, setSelectedFile, isSelectedImageSafe } = useFileStore();
+  const { selectedFile, setSelectedFile } = useFileStore();
 
   const { postPrivacy } = usePost();
-
   const [threadData, setThreadData] = React.useState({
     privacy: postPrivacy,
     text: "",
@@ -100,15 +102,6 @@ const CreatePostCard: React.FC = ({}) => {
 
   async function handleMutation() {
     const checkUploadedImage = selectedFile[0];
-
-    if (checkUploadedImage) {
-      const isSafe = await NSFWFilter.isSafe(checkUploadedImage);
-
-      if (!isSafe) {
-        toast.error("Your post is not work-safe. Please revise it.");
-        return;
-      }
-    }
 
     const imgRes = checkUploadedImage
       ? await uploadFileToAppWrite(checkUploadedImage)
@@ -216,7 +209,6 @@ const CreatePostCard: React.FC = ({}) => {
               size={"sm"}
               onClick={handleCreateThread}
               disabled={
-                !isSelectedImageSafe ||
                 threadData.text === "" ||
                 isPending ||
                 isReplying

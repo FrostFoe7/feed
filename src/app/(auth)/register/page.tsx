@@ -1,20 +1,18 @@
-import LoginForm from "@/components/forms/login-form";
+import RegisterForm from "@/components/forms/register-form";
 import OAuthLogin from "@/components/auth/oauth-login";
 import Link from "next/link";
 import React from "react";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   return (
-    <div className="max-w-[370px] mx-auto py-16 w-full z-50 text-center text-white text-base">
-      <LoginForm />
+    <div className="max-w-[370px] mx-auto py-16 w-full z-50 text-center text-white">
+      <h1 className="text-2xl font-bold mb-6">Create an account</h1>
+      <RegisterForm />
       <div className="text-center text-[#777777] text-[15px] mt-4">
-        Don&apos;t have an account?{" "}
-        <Link href="/register" className="text-white hover:underline">
-          Sign up
+        Already have an account?{" "}
+        <Link href="/login" className="text-white hover:underline">
+          Log in
         </Link>
-      </div>
-      <div className="text-center text-[#777777] text-[15px] mt-2">
-        Forget password?
       </div>
       <div className="mt-6 space-y-5 ">
         <div className="relative">

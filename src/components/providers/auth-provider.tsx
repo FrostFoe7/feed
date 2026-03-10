@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React from "react";
-import { account } from "@/lib/appwrite/client";
 import type { Models } from "appwrite";
+import { useSession } from "next-auth/react";
+import { api } from "@/trpc/react";
 
 type AppWriteAuthUser = Models.User<Models.Preferences> & {
   /** Mapped from AppWrite account $id */
@@ -35,55 +37,46 @@ export function useUser() {
   return React.useContext(AuthContext);
 }
 
-function mapAccountToUser(
-  acct: Models.User<Models.Preferences>,
-): AppWriteAuthUser {
-  const nameParts = (acct.name ?? "").split(" ");
-  const firstName = nameParts[0] ?? null;
-  const lastName = nameParts.slice(1).join(" ") || null;
-  const prefs = acct.prefs as Record<string, string | undefined>;
-  return {
-    ...acct,
-    id: acct.$id,
-    firstName,
-    lastName,
-    fullName: acct.name || null,
-    imageUrl: prefs.imageUrl ?? null,
-    username: prefs.username ?? acct.email?.split("@")[0] ?? null,
-  };
-}
-
 export function AppWriteAuthProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { data: session, status } = useSession();
   const [user, setUser] = React.useState<AppWriteAuthUser | null>(null);
-  const [isLoaded, setIsLoaded] = React.useState(false);
+  const isLoaded = status !== "loading";
 
-  const fetchUser = React.useCallback(async () => {
-    try {
-      const acct = await account.get();
-      setUser(mapAccountToUser(acct));
-    } catch {
-      setUser(null);
-    } finally {
-      setIsLoaded(true);
-    }
-  }, []);
+  // Use tRPC to get the full user data from the DB once we have a session
+  const { data: dbUser, refetch } = api.user.getMe.useQuery(undefined, {
+    enabled: !!session?.user,
+  });
 
   React.useEffect(() => {
-    void fetchUser();
-  }, [fetchUser]);
+    if (session?.user && dbUser) {
+      setUser({
+        ...dbUser,
+        id: dbUser.$id,
+        firstName: dbUser.fullname?.split(" ")[0] || null,
+        lastName: dbUser.fullname?.split(" ").slice(1).join(" ") || null,
+        fullName: dbUser.fullname,
+        imageUrl: dbUser.image,
+        prefs: {},
+      } as any);
+    } else if (status === "unauthenticated") {
+      setUser(null);
+    }
+  }, [session, dbUser, status]);
 
   const value = React.useMemo(
     () => ({
       user,
       isLoaded,
       isSignedIn: !!user,
-      refreshUser: fetchUser,
+      refreshUser: async () => {
+        await refetch();
+      },
     }),
-    [user, isLoaded, fetchUser],
+    [user, isLoaded, refetch],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

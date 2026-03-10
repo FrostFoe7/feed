@@ -1,23 +1,24 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const publicRoutes = ["/login", "/sso-callback", "/api"];
+const publicRoutes = ["/login", "/api"];
 
 function isPublicRoute(pathname: string) {
   return publicRoutes.some((route) => pathname.startsWith(route));
 }
 
-export default function middleware(req: NextRequest) {
+import { getToken } from "next-auth/jwt";
+
+export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Allow public routes and profile routes (@username)
-  if (isPublicRoute(pathname) || pathname.startsWith("/@")) {
+  if (isPublicRoute(pathname) || pathname.startsWith("/@") || pathname === "/") {
     return NextResponse.next();
   }
 
-  // Check for session cookie
-  const session = req.cookies.get("appwrite-session");
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-  if (!session?.value) {
+  if (!token) {
     const url = new URL("/login", req.nextUrl.origin);
     return NextResponse.redirect(url);
   }

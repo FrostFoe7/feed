@@ -7,13 +7,13 @@ import { redirect } from "next/navigation";
 export default async function AccountPage() {
   const user = await getLoggedInUser();
 
-  if (!user) redirect("/login");
+  if (!user || !user.email) redirect("/login");
 
   const isVerifiedUser = await getUserByEmail(user.email);
 
   if (isVerifiedUser) redirect("/");
 
-  const username = (await generateUsername(user.email, user.name)) ?? "";
+  const username = (await generateUsername(user.email)) ?? "";
 
   return (
     <div className="mx-auto flex h-[95vh] w-full max-w-lg flex-col items-center justify-center gap-6">

@@ -16,7 +16,6 @@ import {
   enrichPosts,
   getPostReplies,
   getPostLikes,
-  getPostReposts,
   getParentChain,
   findRepost,
   createRepost,

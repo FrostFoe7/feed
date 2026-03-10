@@ -9,8 +9,8 @@
 /coverage
 
 # env files
-.env
-.env.local
+# .env
+# .env.local
 
 # next.js
 /.next/

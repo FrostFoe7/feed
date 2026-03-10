@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { loginWithGoogle } from "@/lib/appwrite/auth-actions";
+import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 
@@ -11,12 +11,13 @@ const OAuthLogin: React.FC = ({}) => {
   async function oauthSignIn() {
     try {
       setIsLoading(true);
-      await loginWithGoogle();
+      await signIn("google", { callbackUrl: "/" });
     } catch (error) {
       setIsLoading(false);
       console.error("OAuth login error:", error);
     }
   }
+
   return (
     <Button
       aria-label={`Continue with Google`}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "server-only";
 
 import { createAdminClient, ID, Query } from "./server";
@@ -15,6 +16,7 @@ export type AppWriteUser = {
   bio: string | null;
   link: string | null;
   email: string;
+  password?: string;
   verified: boolean;
   privacy: "PUBLIC" | "PRIVATE";
   isAdmin: boolean;
@@ -80,6 +82,7 @@ export async function createUser(data: {
   fullname: string;
   image: string | null;
   email: string;
+  password?: string;
   bio?: string;
   link?: string;
   privacy?: "PUBLIC" | "PRIVATE";
@@ -95,6 +98,7 @@ export async function createUser(data: {
       fullname: data.fullname,
       image: data.image,
       email: data.email,
+      password: data.password ?? null,
       bio: data.bio ?? null,
       link: data.link ?? null,
       privacy: data.privacy ?? "PUBLIC",
@@ -104,14 +108,15 @@ export async function createUser(data: {
   );
 }
 
+export async function updateUser(id: string, data: any) {
+  const { databases } = createAdminClient();
+  return await databases.updateDocument(DATABASE_ID, COLLECTIONS.USERS, id, data);
+}
+
 export async function getUserById(id: string) {
   try {
     const { databases } = createAdminClient();
-    const doc = await databases.getDocument(
-      DATABASE_ID,
-      COLLECTIONS.USERS,
-      id,
-    );
+    const doc = await databases.getDocument(DATABASE_ID, COLLECTIONS.USERS, id);
     return doc as unknown as AppWriteUser;
   } catch {
     return null;
@@ -719,116 +724,4 @@ export async function enrichPosts(
   posts: AppWritePost[],
 ): Promise<EnrichedPost[]> {
   return Promise.all(posts.map(enrichPost));
-}
-
-// ─── Bulk user creation (for seeding) ─────────────────────────
-
-export async function createManyUsers(
-  users: {
-    id: string;
-    username: string;
-    fullname: string;
-    email: string;
-    image: string;
-    bio: string;
-    link: string;
-  }[],
-) {
-  const { databases } = createAdminClient();
-  let count = 0;
-  for (const user of users) {
-    await databases.createDocument(
-      DATABASE_ID,
-      COLLECTIONS.USERS,
-      user.id,
-      {
-        username: user.username,
-        fullname: user.fullname,
-        image: user.image,
-        email: user.email,
-        bio: user.bio,
-        link: user.link,
-        privacy: "PUBLIC",
-        verified: false,
-        isAdmin: false,
-      },
-    );
-    count++;
-  }
-  return { count };
-}
-
-export async function createManyPosts(
-  posts: { authorId: string; text: string }[],
-) {
-  const { databases } = createAdminClient();
-  for (const post of posts) {
-    await databases.createDocument(
-      DATABASE_ID,
-      COLLECTIONS.POSTS,
-      ID.unique(),
-      {
-        authorId: post.authorId,
-        text: post.text,
-        images: [],
-        privacy: "ANYONE",
-        parentPostId: null,
-        quoteId: null,
-      },
-    );
-  }
-  return { success: true };
-}
-
-export async function deleteFakeUsersFromDb() {
-  const { databases } = createAdminClient();
-  const result = await databases.listDocuments(
-    DATABASE_ID,
-    COLLECTIONS.USERS,
-    [Query.equal("verified", false), Query.limit(100)],
-  );
-
-  for (const doc of result.documents) {
-    await databases.deleteDocument(DATABASE_ID, COLLECTIONS.USERS, doc.$id);
-  }
-
-  return { count: result.documents.length };
-}
-
-export async function getFakeUserIds() {
-  const { databases } = createAdminClient();
-  const result = await databases.listDocuments(
-    DATABASE_ID,
-    COLLECTIONS.USERS,
-    [Query.equal("verified", false), Query.limit(50), Query.select(["$id"])],
-  );
-  return result.documents.map((d) => d.$id);
-}
-
-export async function createManyNotifications(
-  notifications: {
-    type: string;
-    message: string;
-    senderUserId: string;
-    receiverUserId?: string;
-  }[],
-) {
-  const { databases } = createAdminClient();
-  for (const notif of notifications) {
-    await databases.createDocument(
-      DATABASE_ID,
-      COLLECTIONS.NOTIFICATIONS,
-      ID.unique(),
-      {
-        type: notif.type,
-        message: notif.message,
-        senderUserId: notif.senderUserId,
-        receiverUserId: notif.receiverUserId ?? null,
-        postId: null,
-        isPublic: false,
-        read: false,
-      },
-    );
-  }
-  return { success: true };
 }

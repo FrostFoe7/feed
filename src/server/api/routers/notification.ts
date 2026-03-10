@@ -1,5 +1,4 @@
 import { createTRPCRouter, privateProcedure } from "@/server/api/trpc";
-import { TRPCError } from "@trpc/server";
 import {
   getNotifications,
   getUserById,

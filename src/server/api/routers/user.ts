@@ -7,6 +7,7 @@ import {
 import { TRPCError } from "@trpc/server";
 import {
   getUserByUsername,
+  getUserById,
   getUserPosts,
   getUserReposts,
   getAllUsers,
@@ -21,6 +22,12 @@ import {
 } from "@/lib/appwrite/db";
 
 export const userRouter = createTRPCRouter({
+  getMe: privateProcedure.query(async ({ ctx }) => {
+    const user = await getUserById(ctx.userId);
+    if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+    return user;
+  }),
+
   Info: publicProcedure
     .input(z.object({ username: z.string() }))
     .query(async ({ input }) => {

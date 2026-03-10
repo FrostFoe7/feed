@@ -21,7 +21,6 @@ import {
   Client,
   Databases,
   Storage,
-  ID,
   Permission,
   Role,
   IndexType,
@@ -49,21 +48,21 @@ const databases = new Databases(client);
 const storage = new Storage(client);
 
 // IDs – deterministic so the script is idempotent
-const DATABASE_ID = "threads_db";
+const DATABASE_ID = process.env.APPWRITE_DATABASE_ID ?? "threads_db";
 
 const COL = {
-  USERS: "users",
-  POSTS: "posts",
-  LIKES: "likes",
-  REPOSTS: "reposts",
-  FOLLOWS: "follows",
-  NOTIFICATIONS: "notifications",
-  REPORTS: "reports",
+  USERS: process.env.APPWRITE_COLLECTION_USERS ?? "users",
+  POSTS: process.env.APPWRITE_COLLECTION_POSTS ?? "posts",
+  LIKES: process.env.APPWRITE_COLLECTION_LIKES ?? "likes",
+  REPOSTS: process.env.APPWRITE_COLLECTION_REPOSTS ?? "reposts",
+  FOLLOWS: process.env.APPWRITE_COLLECTION_FOLLOWS ?? "follows",
+  NOTIFICATIONS: process.env.APPWRITE_COLLECTION_NOTIFICATIONS ?? "notifications",
+  REPORTS: process.env.APPWRITE_COLLECTION_REPORTS ?? "reports",
 } as const;
 
 const BUCKET = {
-  AVATARS: "avatars",
-  POST_IMAGES: "post_images",
+  AVATARS: process.env.APPWRITE_BUCKET_AVATARS ?? "avatars",
+  POST_IMAGES: process.env.APPWRITE_BUCKET_POST_IMAGES ?? "post_images",
 } as const;
 
 // ─── Helpers ──────────────────────────────────────────────────
@@ -251,19 +250,20 @@ async function main() {
     { type: "string", key: "link", size: 2048, required: false },
     { type: "email", key: "email", required: true },
     { type: "boolean", key: "verified", required: false, default: false },
-    { type: "enum", key: "privacy", elements: ["PUBLIC", "PRIVATE"], required: true, default: "PUBLIC" },
+    { type: "enum", key: "privacy", elements: ["PUBLIC", "PRIVATE"], required: false, default: "PUBLIC" },
     { type: "boolean", key: "isAdmin", required: false, default: false },
+    { type: "string", key: "password", size: 256, required: false },
   ]);
 
   // ─── Posts ──────────────────────────────────────────────────
   info("Creating Posts attributes...");
   await createAttributes(DATABASE_ID, COL.POSTS, [
     { type: "string", key: "authorId", size: 128, required: true },
-    { type: "string", key: "text", size: 10000, required: true },
+    { type: "string", key: "text", size: 5000, required: true },
     { type: "string", key: "images", size: 2048, required: false, array: true },
     { type: "string", key: "parentPostId", size: 128, required: false },
     { type: "string", key: "quoteId", size: 128, required: false },
-    { type: "enum", key: "privacy", elements: ["ANYONE", "FOLLOWED", "MENTIONED"], required: true, default: "ANYONE" },
+    { type: "enum", key: "privacy", elements: ["ANYONE", "FOLLOWED", "MENTIONED"], required: false, default: "ANYONE" },
   ]);
 
   // ─── Likes ──────────────────────────────────────────────────
@@ -290,10 +290,10 @@ async function main() {
   // ─── Notifications ──────────────────────────────────────────
   info("Creating Notifications attributes...");
   await createAttributes(DATABASE_ID, COL.NOTIFICATIONS, [
-    { type: "boolean", key: "read", required: true, default: false },
+    { type: "boolean", key: "read", required: false, default: false },
     { type: "enum", key: "type", elements: ["ADMIN", "LIKE", "REPLY", "FOLLOW", "REPOST", "QUOTE"], required: true },
     { type: "string", key: "message", size: 4096, required: true },
-    { type: "boolean", key: "isPublic", required: true, default: false },
+    { type: "boolean", key: "isPublic", required: false, default: false },
     { type: "string", key: "senderUserId", size: 128, required: true },
     { type: "string", key: "receiverUserId", size: 128, required: false },
     { type: "string", key: "postId", size: 128, required: false },

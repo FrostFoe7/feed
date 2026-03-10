@@ -11,7 +11,7 @@ interface PagesLayoutProps {
 export default async function PagesLayout({ children }: PagesLayoutProps) {
   const user = await getLoggedInUser();
 
-  if (!user) redirect("/login");
+  if (!user || !user.email) redirect("/login");
 
   const dbUser = await getUserByEmail(user.email);
 

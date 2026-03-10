@@ -2,7 +2,7 @@
 
 import { searchUsers } from "@/lib/appwrite/db";
 
-export async function generateUsername(email: string, name?: string) {
+export async function generateUsername(email: string) {
   const usernameMatch = email.match(/^(.+)@/);
 
   if (!usernameMatch) {

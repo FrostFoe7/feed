@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import { logout } from "@/lib/appwrite/auth-actions";
+import { signOut } from "next-auth/react";
 import { Icons } from "@/components/icons";
-import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
   DropdownMenu,
@@ -14,12 +13,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function NavigationMenu() {
-  const router = useRouter();
   const { theme, setTheme } = useTheme();
 
   async function handleSignOut() {
-    await logout();
-    router.push("/login");
+    await signOut({ callbackUrl: "/login" });
   }
 
   return (

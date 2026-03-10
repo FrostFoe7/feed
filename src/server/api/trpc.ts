@@ -1,23 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TRPCError, initTRPC } from "@trpc/server";
 import { type NextRequest } from "next/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { createSessionClient } from "@/lib/appwrite/server";
+import { getServerAuthSession } from "@/server/auth";
 
-interface CreateContextOptions {
-  headers: Headers;
-}
-
-export const createInnerTRPCContext = (opts: CreateContextOptions) => {
+export const createTRPCContext = async (opts: { req: NextRequest }) => {
+  const session = await getServerAuthSession();
   return {
-    headers: opts.headers,
-  };
-};
-
-export const createTRPCContext = (opts: { req: NextRequest }) => {
-  return createInnerTRPCContext({
     headers: opts.req.headers,
-  });
+    session,
+  };
 };
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
@@ -37,27 +30,16 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 export const middleware = t.middleware;
 
 const isAuth = middleware(async (opts) => {
-  const sessionCookie = opts.ctx.headers.get("cookie") ?? "";
-  const sessionMatch = sessionCookie.match(/appwrite-session=([^;]+)/);
-  const sessionValue = sessionMatch?.[1];
-
-  if (!sessionValue) {
+  if (!opts.ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  try {
-    const { account } = createSessionClient(sessionValue);
-    const user = await account.get();
-
-    return opts.next({
-      ctx: {
-        userId: user.$id,
-        user,
-      },
-    });
-  } catch {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
+  return opts.next({
+    ctx: {
+      userId: (opts.ctx.session.user as any).id,
+      user: opts.ctx.session.user,
+    },
+  });
 });
 
 export const createTRPCRouter = t.router;
