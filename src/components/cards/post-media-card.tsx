@@ -74,13 +74,16 @@ const PostMediaCard: React.FC<PostMediaCardProps> = ({ images }) => {
                 )}
               >
                 <div
-                  className="relative overflow-hidden rounded-[8px] border border-border w-full aspect-square flex items-center justify-center bg-black/5 cursor-pointer"
+                  className={cn(
+                    "relative overflow-hidden rounded-[8px] border border-border w-full flex items-center justify-center bg-black/5 cursor-pointer",
+                    !isVideo && "aspect-square"
+                  )}
                   onClick={() => {
                     if (!isVideo) setImageUrl(url);
                   }}
                 >
                   {isVideo ? (
-                    <VideoPlayer src={url} className="w-full h-full object-cover" />
+                    <VideoPlayer src={url} className="w-full h-auto" />
                   ) : (
                     <Image
                       loading="lazy"
