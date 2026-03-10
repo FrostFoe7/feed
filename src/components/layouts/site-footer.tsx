@@ -4,8 +4,8 @@ import React from "react";
 
 export default function SiteFooter() {
   return (
-    <footer className="max-w-(--breakpoint-md)  md:max-w-(--breakpoint-2xl) lg:max-w-full mx-auto fixed bottom-8 w-full">
-      <ul className="flex text-center flex-wrap justify-center gap-4 text-xs ">
+    <footer className="max-w-(--breakpoint-md)  md:max-w-(--breakpoint-2xl) lg:max-w-full mx-auto fixed bottom-8 w-full pointer-events-none">
+      <ul className="flex text-center flex-wrap justify-center gap-4 text-xs pointer-events-auto">
         <li>
           <a href="#" className="text-gray-500 transition hover:opacity-75">
             © 2023

@@ -5,7 +5,7 @@ import React from "react";
 
 export default function RegisterPage() {
   return (
-    <div className="max-w-[370px] mx-auto py-16 w-full z-50 text-center text-white">
+    <div className="max-w-[370px] mx-auto py-16 w-full text-center text-white relative">
       <h1 className="text-2xl font-bold mb-6">Create an account</h1>
       <RegisterForm />
       <div className="text-center text-[#777777] text-[15px] mt-4">

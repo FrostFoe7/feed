@@ -5,7 +5,7 @@ import React from "react";
 
 export default function LoginPage() {
   return (
-    <div className="max-w-[370px] mx-auto py-16 w-full z-50 text-center text-white text-base">
+    <div className="max-w-[370px] mx-auto py-16 w-full text-center text-white text-base relative">
       <LoginForm />
       <div className="text-center text-[#777777] text-[15px] mt-4">
         Don&apos;t have an account?{" "}
