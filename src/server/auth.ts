@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextAuthOptions, getServerSession } from "next-auth";
+import { NextAuthOptions } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
@@ -99,26 +100,33 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider === "google") {
-        if (!user.email) return false;
+      try {
+        if (account?.provider === "google") {
+          if (!user.email) return false;
 
-        const existingUser = await getUserByEmail(user.email);
-        if (!existingUser) {
-          const username =
-            user.name?.replace(/\s+/g, "").toLowerCase() ||
-            user.email.split("@")[0] ||
-            "user";
-          await createUser({
-            id: ID.unique(),
-            email: user.email,
-            username,
-            fullname: user.name || username,
-            image: user.image || null,
-            verified: false,
-          });
+          const existingUser = await getUserByEmail(user.email);
+          if (!existingUser) {
+            const username =
+              user.name?.replace(/\s+/g, "").toLowerCase() ||
+              user.email.split("@")[0] ||
+              "user";
+            await createUser({
+              id: ID.unique(),
+              email: user.email,
+              username,
+              fullname: user.name || username,
+              image: user.image || null,
+              verified: false,
+            });
+          }
         }
+        return true;
+      } catch (e: any) {
+        console.error("NextAuth signIn callback error:", e);
+        // Returning false instead of throwing prevents a server crash (500)
+        // and instead redirects to the error page with ?error=AccessDenied
+        return false;
       }
-      return true;
     },
     async jwt({ token, user }) {
       if (user) {
