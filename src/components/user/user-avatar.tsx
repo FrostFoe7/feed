@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, getOptimizedImageUrl } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -25,7 +25,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
     >
       <Avatar className="h-min w-full rounded-full object-cover ">
         <AvatarImage
-          src={image ?? ""}
+          src={getOptimizedImageUrl(image ?? "", 100)}
           alt={fullname ?? ""}
           className="rounded-full w-full h-full object-cover"
         />

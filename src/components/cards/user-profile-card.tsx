@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { formatURL } from "@/lib/utils";
+import { formatURL, getOptimizedImageUrl } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import type { PostCardProps } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,7 +28,7 @@ const UserProfileCard: React.FC<UserProfileCardProps> = (props) => {
         </div>
         <Avatar className="h-[64px] w-[64px] overflow-visible outline-solid outline-2 outline-border relative">
           <AvatarImage
-            src={image ?? ""}
+            src={getOptimizedImageUrl(image ?? "", 100)}
             alt={fullname ?? ""}
             className="h-min w-full rounded-full object-cover "
           />

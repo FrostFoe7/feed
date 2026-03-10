@@ -13,7 +13,7 @@ import RepostButton from "@/components/buttons/repost-button";
 import ShareButton from "@/components/buttons/share-button";
 import LikeButton from "@/components/buttons/like-button";
 import PostActivityCard from "@/components/cards/post-activity-card";
-import { cn, formatTimeAgo } from "@/lib/utils";
+import { cn, formatTimeAgo, getOptimizedImageUrl } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import PostImageCard from "@/components/cards/post-image-card";
@@ -105,7 +105,7 @@ const PostReplyCard: React.FC<PostReplyCardProps> = ({
                 <div className="h-9 w-9 outline-solid outline-1 outline-border rounded-full ml-px">
                   <Avatar className="rounded-full w-full h-full ">
                     <AvatarImage
-                      src={author.image ?? ""}
+                      src={getOptimizedImageUrl(author.image ?? "", 100)}
                       alt={author.username}
                       className="object-cover"
                     />

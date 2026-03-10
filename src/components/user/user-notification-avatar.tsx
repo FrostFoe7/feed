@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 type NotificationType = "ADMIN" | "LIKE" | "REPLY" | "FOLLOW" | "REPOST" | "QUOTE";
 import { Icons } from "@/components/icons";
-import { cn } from "@/lib/utils";
+import { cn, getOptimizedImageUrl } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface UserNotificationAvtarProps {
@@ -54,7 +54,7 @@ const UserNotificationAvtar: React.FC<UserNotificationAvtarProps> = ({
       <div className="outline-solid outline-1 outline-border rounded-full ml-px">
         <Avatar className="h-10 w-10 relative overflow-visible cursor-pointer ">
           <AvatarImage
-            src={image}
+            src={getOptimizedImageUrl(image, 100)}
             alt={fullname}
             className="rounded-full w-full h-full object-cover"
           />

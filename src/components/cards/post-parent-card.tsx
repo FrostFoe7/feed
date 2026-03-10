@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { cn, formatTimeAgo } from "@/lib/utils";
+import { cn, formatTimeAgo, getOptimizedImageUrl } from "@/lib/utils";
 import { useUser } from "@/components/providers/auth-provider";
 import type { PostCardProps } from "@/types";
 import UserRepliesImages from "@/components/user/user-replies-images";
@@ -69,7 +69,7 @@ const PostParentCard: React.FC<PostCardProps> = ({
                 <div className="h-9 w-9 outline-solid outline-1 outline-border rounded-full ml-px">
                   <Avatar className="rounded-full w-full h-full ">
                     <AvatarImage
-                      src={author.image ?? ""}
+                      src={getOptimizedImageUrl(author.image ?? "", 100)}
                       alt={author.username}
                       className="object-cover"
                     />

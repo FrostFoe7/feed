@@ -17,6 +17,7 @@ import { useUser } from "@/components/providers/auth-provider";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getOptimizedImageUrl } from "@/lib/utils";
 import {
   Form,
   FormControl,
@@ -159,7 +160,7 @@ export default function AccountSetupForm({ username }: { username: string }) {
                     </div>
                     <Avatar className="rounded-full outline-solid outline-1 outline-border h-12 w-12 ">
                       <AvatarImage
-                        src={user?.imageUrl ?? undefined}
+                        src={getOptimizedImageUrl(user?.imageUrl ?? "", 100)}
                         alt={user?.username ?? ""}
                         className="object-cover"
                       />

@@ -4,6 +4,7 @@ import useWindow from "@/hooks/use-window";
 import React from "react";
 import { Icons } from "@/components/icons";
 import Image from "next/image";
+import { getOptimizedImageUrl } from "@/lib/utils";
 
 export default function ThreadsBanner() {
   const { isMobile } = useWindow();
@@ -18,7 +19,7 @@ export default function ThreadsBanner() {
           <Image
             width={1000}
             height={1000}
-            src="/bg.webp"
+            src={getOptimizedImageUrl("/bg.webp", 800)}
             alt="Background"
             className="w-full h-[500px] object-cover"
             unoptimized

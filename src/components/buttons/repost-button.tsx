@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useOptimistic, useTransition } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,33 +28,41 @@ const RepostButton: React.FC<RepostButtonProps> = ({
   createdAt,
   isRepostedByMe,
 }) => {
-  const [isReposted, setIsReposted] = React.useState(isRepostedByMe);
+  const [optimisticReposted, addOptimisticReposted] = useOptimistic(
+    isRepostedByMe,
+    (state: boolean, newRepostState: boolean) => newRepostState
+  );
+  const [isPending, startTransition] = useTransition();
 
-  React.useEffect(() => {
-    setIsReposted(isRepostedByMe);
-  }, [isRepostedByMe]);
+  const trpcUtils = api.useUtils();
 
-  const { mutate: toggleRepost, isPending } = api.post.toggleRepost.useMutation(
+  const { mutateAsync: toggleRepost } = api.post.toggleRepost.useMutation(
     {
-      onMutate: () => {
-        const previousReposted = isReposted;
-
-        setIsReposted((prev) => !prev);
-
-        if (!previousReposted === true) {
-          toast("Reposted");
-        } else {
-          toast("Removed");
-        }
-
-        return { previousReposted };
+      onSuccess: () => {
+        trpcUtils.post.getInfinitePost.invalidate();
       },
-      onError: (error, variables, context) => {
-        setIsReposted(context?.previousReposted ?? isReposted);
+      onError: () => {
         toast.error("RepostError: Something went wrong!");
       },
     },
   );
+
+  const handleRepost = () => {
+    const newState = !optimisticReposted;
+    startTransition(async () => {
+      addOptimisticReposted(newState);
+      if (newState) {
+        toast("Reposted");
+      } else {
+        toast("Removed");
+      }
+      try {
+        await toggleRepost({ id });
+      } catch {
+        // useOptimistic auto reverts on failure since base state is unchanged
+      }
+    });
+  };
 
   return (
     <DropdownMenu>
@@ -63,7 +71,7 @@ const RepostButton: React.FC<RepostButtonProps> = ({
           disabled={isPending}
           className="flex items-center justify-center hover:bg-primary rounded-full p-2 w-fit h-fit active:scale-95 outline-hidden"
         >
-          {isReposted ? (
+          {optimisticReposted ? (
             <Icons.reposted className="w-5 h-5 " />
           ) : (
             <Icons.repost className="w-5 h-5 " />
@@ -76,21 +84,19 @@ const RepostButton: React.FC<RepostButtonProps> = ({
       >
         <DropdownMenuItem
           disabled={isPending}
-          onClick={() => {
-            toggleRepost({ id });
-          }}
+          onClick={handleRepost}
           className={cn(
             "focus:bg-transparent px-4 tracking-normal select-none font-semibold py-3 cursor-pointer text-[15px]  active:bg-primary-foreground  rounded-none w-full justify-between",
             {
-              "text-red-600 focus:text-red-600": isReposted,
+              "text-red-600 focus:text-red-600": optimisticReposted,
             },
           )}
         >
-          {isReposted ? <>Remove</> : <>Repost</>}
+          {optimisticReposted ? <>Remove</> : <>Repost</>}
 
           <Icons.repost
             className={cn("w-5 h-5 ", {
-              "text-red-600": isReposted,
+              "text-red-600": optimisticReposted,
             })}
           />
         </DropdownMenuItem>

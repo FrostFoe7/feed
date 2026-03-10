@@ -7,6 +7,7 @@ import { Icons } from "@/components/icons";
 import FollowButton from "@/components/buttons/follow-button";
 import UserFollowers from "@/components/user/user-followers";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getOptimizedImageUrl } from "@/lib/utils";
 
 const UserActionCard: React.FC<UserCardProps> = ({
   id,
@@ -25,7 +26,7 @@ const UserActionCard: React.FC<UserCardProps> = ({
         <Link href={`/@${username}`}>
           <Avatar className="h-10 w-10 relative overflow-visible cursor-pointer outline-solid outline-1 outline-border ">
             <AvatarImage
-              src={image ?? ""}
+              src={getOptimizedImageUrl(image ?? "", 100)}
               alt={fullname ?? ""}
               className="rounded-full object-cover"
             />

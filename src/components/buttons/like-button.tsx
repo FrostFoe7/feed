@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useOptimistic, useTransition } from "react";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/components/providers/auth-provider";
@@ -17,40 +17,45 @@ const LikeButton: React.FC<LikeButtonProps> = ({ likeInfo, onLike }) => {
   const { user: loggedUser } = useUser();
 
   const { id, likes } = likeInfo;
-  const isLikedByMe = likes?.some((like) => like.userId === loggedUser?.id);
+  const isLikedByMe = likes?.some((like) => like.userId === loggedUser?.id) ?? false;
 
-  const [isLiked, setIsLiked] = React.useState(isLikedByMe);
+  const [optimisticLike, addOptimisticLike] = useOptimistic(
+    isLikedByMe,
+    (state: boolean, newLikeState: boolean) => newLikeState
+  );
+  
+  const [isPending, startTransition] = useTransition();
+  const trpcUtils = api.useUtils();
 
-  React.useEffect(() => {
-    setIsLiked(isLikedByMe);
-  }, [isLikedByMe]);
-
-  const { mutate: toggleLike, isPending } = api.like.toggleLike.useMutation({
-    onMutate: () => {
-      const previousLiked = isLiked;
-
-      setIsLiked((prev) => !prev);
-
-      return { previousLiked };
+  const { mutateAsync: toggleLike } = api.like.toggleLike.useMutation({
+    onSuccess: () => {
+      trpcUtils.post.getInfinitePost.invalidate();
     },
-    onError: (error, variables, context) => {
-      setIsLiked(context?.previousLiked ?? isLiked);
-
+    onError: () => {
       toast.error("Something went wrong!");
     },
   });
 
+  const handleLike = () => {
+    const newState = !optimisticLike;
+    onLike(optimisticLike);
+    startTransition(async () => {
+      addOptimisticLike(newState);
+      try {
+        await toggleLike({ id });
+      } catch {
+        // error handled in onError, optimistic state reverts automatically
+      }
+    });
+  };
+
   return (
     <div className="flex items-center justify-center hover:bg-primary rounded-full p-2 w-fit h-fit active:scale-95">
-      <button disabled={isPending}>
+      <button disabled={isPending} onClick={handleLike}>
         <Icons.heart
-          onClick={() => {
-            onLike(isLiked);
-            toggleLike({ id });
-          }}
-          fill={isLiked ? "#ff3040" : "transparent"}
+          fill={optimisticLike ? "#ff3040" : "transparent"}
           className={cn("w-5 h-5 ", {
-            "text-[#ff3040]": isLiked,
+            "text-[#ff3040]": optimisticLike,
           })}
         />
       </button>

@@ -81,3 +81,16 @@ export function truncateText(text: string, maxLength: number) {
     return text;
   }
 }
+
+export function getOptimizedImageUrl(url: string, width?: number, quality: number = 80) {
+  if (!url) return "";
+  if (url.includes("/view?project=")) {
+    let optimizedUrl = url.replace("/view?project=", "/preview?project=");
+    optimizedUrl += `&output=webp&quality=${quality}`;
+    if (width) {
+      optimizedUrl += `&width=${width}`;
+    }
+    return optimizedUrl;
+  }
+  return url;
+}

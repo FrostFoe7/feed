@@ -2,6 +2,7 @@ import { useUser } from "@/components/providers/auth-provider";
 import React from "react";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getOptimizedImageUrl } from "@/lib/utils";
 
 const CreateWithInput: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   ...props
@@ -14,7 +15,7 @@ const CreateWithInput: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
         <div className="w-full flex select-none">
           <Avatar className="rounded-full outline-solid outline-1 outline-border h-9 w-9 mr-4">
             <AvatarImage
-              src={user?.imageUrl ?? undefined}
+              src={getOptimizedImageUrl(user?.imageUrl ?? "", 100)}
               alt={user?.username ?? ""}
               className="object-cover"
             />

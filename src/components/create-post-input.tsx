@@ -6,7 +6,7 @@ import useFileStore from "@/store/fileStore";
 import { X } from "lucide-react";
 import Username from "@/components/user/user-username";
 import { ResizeTextarea } from "@/components/ui/resize-textarea";
-import { cn } from "@/lib/utils";
+import { cn, getOptimizedImageUrl } from "@/lib/utils";
 import UserAvatar from "@/components/user/user-avatar";
 import { useUser } from "@/components/providers/auth-provider";
 import { Icons } from "@/components/icons";
@@ -156,7 +156,7 @@ const CreatePostInput: React.FC<CreatePostInputProps> = ({
             {previewURL && (
               <div className="relative overflow-hidden rounded-[12px] border border-border w-fit">
                 <Image
-                  src={previewURL}
+                  src={getOptimizedImageUrl(previewURL, 800)}
                   alt="Preview"
                   width={1000}
                   height={1000}

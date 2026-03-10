@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useOptimistic, useTransition } from "react";
 import { Follow } from "@/components/ui/follow-button";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
@@ -26,33 +26,19 @@ const FollowButton: React.FC<FollowButtonProps> = ({
   const isSameUser = author.id === loggedUser?.id;
   const isFollowedByMe = author.followers?.some(
     (user) => user.id === loggedUser?.id,
+  ) ?? false;
+
+  const [optimisticFollowed, addOptimisticFollowed] = useOptimistic(
+    isFollowedByMe,
+    (state: boolean, newFollowState: boolean) => newFollowState
   );
-
-  const [isFollowed, setIsFollowed] = React.useState(isFollowedByMe);
-
-  React.useEffect(() => {
-    setIsFollowed(isFollowedByMe);
-  }, [isFollowedByMe]);
+  const [isPending, startTransition] = useTransition();
 
   const trpcUtils = api.useUtils();
 
-  const { mutate: toggleFollow, isPending } = api.user.toggleFollow.useMutation(
+  const { mutateAsync: toggleFollow } = api.user.toggleFollow.useMutation(
     {
-      onMutate: () => {
-        const previousFollowed = isFollowed;
-
-        setIsFollowed((prev) => !prev);
-
-        if (!previousFollowed === true) {
-          toast("Followed");
-        } else {
-          toast("Unfollowed");
-        }
-
-        return { previousFollowed };
-      },
-      onError: (error, variables, context) => {
-        setIsFollowed(context?.previousFollowed ?? isFollowed);
+      onError: () => {
         toast.error("FollowError: Something went wrong!");
       },
       onSettled: async () => {
@@ -64,19 +50,34 @@ const FollowButton: React.FC<FollowButtonProps> = ({
     },
   );
 
+  const handleFollow = () => {
+    const newState = !optimisticFollowed;
+    startTransition(async () => {
+      addOptimisticFollowed(newState);
+      if (newState) {
+        toast("Followed");
+      } else {
+        toast("Unfollowed");
+      }
+      try {
+        await toggleFollow({ id: author.id });
+      } catch {
+        // useOptimistic automatically reverts
+      }
+    });
+  };
+
   const setVariant = variant === "default" ? "default" : "outline";
   return (
     <Follow
       disabled={isPending || isSameUser}
-      onClick={() => {
-        toggleFollow({ id: author.id });
-      }}
-      variant={!isFollowed ? setVariant : "outline"}
+      onClick={handleFollow}
+      variant={!optimisticFollowed ? setVariant : "outline"}
       className={cn("rounded-xl py-1.5 px-4 select-none", className, {
-        "opacity-80": isFollowed,
+        "opacity-80": optimisticFollowed,
       })}
     >
-      {isFollowed ? "Following" : "Follow"}
+      {optimisticFollowed ? "Following" : "Follow"}
     </Follow>
   );
 };

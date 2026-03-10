@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { getOptimizedImageUrl } from "@/lib/utils";
 
 export type UserRepliesImagesProps = {
   author: {
@@ -16,7 +17,7 @@ const UserRepliesImages: React.FC<UserRepliesImagesProps> = ({ author }) => {
         <div className="relative z-0 flex h-4 w-4 shrink-0 select-none items-center justify-center rounded-full ring-1 ring-border">
           <Image
             className="h-full w-full rounded-full object-cover object-center"
-            src={author[0]?.image ?? ""}
+            src={getOptimizedImageUrl(author[0]?.image ?? "", 800)}
             alt={author[0]?.username ?? "User"}
             width={16}
             height={16}
@@ -34,7 +35,7 @@ const UserRepliesImages: React.FC<UserRepliesImagesProps> = ({ author }) => {
             >
               <Image
                 className="h-full w-full rounded-full object-cover object-center"
-                src={authorData.image ?? ""}
+                src={getOptimizedImageUrl(authorData.image ?? "", 800)}
                 alt={authorData.username ?? "User"}
                 width={16}
                 height={16}
@@ -48,7 +49,7 @@ const UserRepliesImages: React.FC<UserRepliesImagesProps> = ({ author }) => {
       {author?.length >= 3 && (
         <div className="relative w-[48px] h-9 left-0 top-2 ">
           <Image
-            src={author[0]?.image ?? ""}
+            src={getOptimizedImageUrl(author[0]?.image ?? "", 800)}
             alt={author[0]?.username ?? "User"}
             className="absolute w-[16px] h-[16px] left-[25px] top-0 rounded-full ring-1 ring-border"
             width={16}
@@ -57,7 +58,7 @@ const UserRepliesImages: React.FC<UserRepliesImagesProps> = ({ author }) => {
           />
 
           <Image
-            src={author[1]?.image ?? ""}
+            src={getOptimizedImageUrl(author[1]?.image ?? "", 800)}
             alt={author[1]?.username ?? "User"}
             className=" absolute w-[12px] h-[12px] left-[18px] top-4 rounded-full  ring-1 ring-border"
             width={12}
@@ -66,7 +67,7 @@ const UserRepliesImages: React.FC<UserRepliesImagesProps> = ({ author }) => {
           />
 
           <Image
-            src={author[2]?.image ?? ""}
+            src={getOptimizedImageUrl(author[2]?.image ?? "", 800)}
             alt={author[2]?.username ?? "User"}
             className="absolute w-[14px] h-[14px] left-2 top-0.5 rounded-full ring-1 ring-border"
             width={14}

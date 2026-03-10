@@ -8,7 +8,7 @@ import { api } from "@/trpc/react";
 import type { AuthorInfoProps } from "@/types";
 import Username from "@/components/user/user-username";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, getOptimizedImageUrl } from "@/lib/utils";
 import FollowButton from "@/components/buttons/follow-button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -44,7 +44,7 @@ const PostActivityCard: React.FC<PostActivityCardProps> = ({
           <Card className="overflow-hidden p-4 mx-6 mb-2 rounded-xl space-y-1.5 bg-transparent border-border ">
             <div className="flex items-center gap-2">
               <Avatar className="rounded-full w-7 h-7">
-                <AvatarImage src={author.image ?? ""} alt="author.username" />
+                <AvatarImage src={getOptimizedImageUrl(author.image ?? "", 100)} alt="author.username" />
                 <AvatarFallback>OG</AvatarFallback>
               </Avatar>
               <Username author={author} />
@@ -135,7 +135,7 @@ const DisplayInsight: React.FC<DisplayInsightProps> = ({ id }) => {
             <div className="h-9 w-9 outline-solid outline-1 outline-[#333333] rounded-full">
               <Avatar className="rounded-full w-full h-full">
                 <AvatarImage
-                  src={userData.user.image ?? ""}
+                  src={getOptimizedImageUrl(userData.user.image ?? "", 100)}
                   alt={userData.user.fullname ?? ""}
                 />
                 <AvatarFallback>

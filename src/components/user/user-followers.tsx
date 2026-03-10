@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, getOptimizedImageUrl } from "@/lib/utils";
 import type { PostCardProps } from "@/types";
 import Image from "next/image";
 import React from "react";
@@ -24,7 +24,7 @@ const UserFollowers: React.FC<UserFollowersProps> = ({
             >
               <Image
                 className="h-full w-full rounded-full object-cover object-center"
-                src={authorData.image ?? ""}
+                src={getOptimizedImageUrl(authorData.image ?? "", 800)}
                 alt="Follower"
                 width={16}
                 height={16}

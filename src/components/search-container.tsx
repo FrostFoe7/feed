@@ -4,7 +4,7 @@ import React from "react";
 import { Icons } from "@/components/icons";
 import { ChevronRight } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { cn, getOptimizedImageUrl } from "@/lib/utils";
 import { useDebounce } from "@/hooks/use-debounce";
 import { api } from "@/trpc/react";
 import { usePathname, useRouter } from "next/navigation";
@@ -95,7 +95,7 @@ const DisplaySearchedResults: React.FC<DisplaySearchedResultsProps> = ({
           <button className="mx-5 ">
             <div className="h-9 w-9 outline-solid outline-1  outline-border rounded-full">
               <Avatar className="rounded-full w-full h-full">
-                <AvatarImage src={user.image ?? ""} alt={user.fullname ?? ""} />
+                <AvatarImage src={getOptimizedImageUrl(user.image ?? "", 100)} alt={user.fullname ?? ""} />
                 <AvatarFallback>OG</AvatarFallback>
               </Avatar>
             </div>

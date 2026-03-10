@@ -4,7 +4,7 @@ import React from "react";
 import { Instagram } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-import { cn, formatURL } from "@/lib/utils";
+import { cn, formatURL, getOptimizedImageUrl } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import type { UserProfileInfoProps } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,7 @@ const UserProfile: React.FC<UserProfileInfoProps> = (props) => {
         </div>
         <Avatar className="h-[80px] w-[80px] overflow-visible outline-solid outline-2 outline-border relative">
           <AvatarImage
-            src={image ?? ""}
+            src={getOptimizedImageUrl(image ?? "", 100)}
             alt={fullname ?? ""}
             className="h-min w-full rounded-full object-cover "
           />

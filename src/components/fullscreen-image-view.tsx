@@ -4,6 +4,7 @@ import { useImageStore } from "@/store/image";
 import { X } from "lucide-react";
 import Image from "next/image";
 import React from "react";
+import { getOptimizedImageUrl } from "@/lib/utils";
 
 const FullscreenImageView: React.FC = ({}) => {
   const { imageUrl, setImageUrl } = useImageStore();
@@ -21,7 +22,7 @@ const FullscreenImageView: React.FC = ({}) => {
           <Image
             width={630}
             height={630}
-            src={imageUrl}
+            src={getOptimizedImageUrl(imageUrl, 800)}
             alt="Image with full screen view"
             className="w-max h-full mx-auto object-cover"
           />
