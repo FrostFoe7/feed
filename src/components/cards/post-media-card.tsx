@@ -39,7 +39,7 @@ const PostMediaCard: React.FC<PostMediaCardProps> = ({ images }) => {
             return (
               <CarouselItem key={index} className="basis-full">
                 <div
-                  className="relative overflow-hidden rounded-[12px] border border-border w-full aspect-video flex items-center justify-center bg-black/5 cursor-pointer"
+                  className="relative overflow-hidden rounded-[12px] border border-border w-full aspect-square flex items-center justify-center bg-black/5 cursor-pointer"
                   onClick={() => {
                     if (!isVideo) setImageUrl(url);
                   }}

@@ -223,7 +223,7 @@ const CreatePostInput: React.FC<CreatePostInputProps> = ({
                   <CarouselContent>
                     {previewFiles.map((file, index) => (
                       <CarouselItem key={index} className="basis-full">
-                        <div className="relative overflow-hidden rounded-[12px] border border-border w-full aspect-video flex items-center justify-center bg-black/5">
+                        <div className="relative overflow-hidden rounded-[12px] border border-border w-full aspect-square flex items-center justify-center bg-black/5">
                           {file.type === "image" ? (
                             <Image
                               src={file.url}
