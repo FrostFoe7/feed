@@ -147,9 +147,7 @@ const PostReplyCard: React.FC<PostReplyCardProps> = ({
                 className="text-accent-foreground text-[15px] leading-5 mt-1 max-md:max-w-full whitespace-pre-line"
               />
 
-              {images && images.length > 0 && (
-                <PostMediaCard images={images} />
-              )}
+              {images && images.length > 0 && <PostMediaCard images={images} />}
 
               {quoteId && (
                 <PostQuoteCard quoteId={quoteId} createdAt={createdAt} />

@@ -56,8 +56,8 @@ const PostMediaCard: React.FC<PostMediaCardProps> = ({ images }) => {
         </div>
       )}
 
-      <Carousel 
-        setApi={setApi} 
+      <Carousel
+        setApi={setApi}
         opts={{ align: "start", loop: false }}
         className="w-full"
       >
@@ -65,11 +65,11 @@ const PostMediaCard: React.FC<PostMediaCardProps> = ({ images }) => {
           {images.map((url, index) => {
             const isVideo = url.includes("type=video");
             return (
-              <CarouselItem 
-                key={index} 
+              <CarouselItem
+                key={index}
                 className={cn(
                   "pl-0 pr-2",
-                  images.length > 1 ? "basis-[88%]" : "basis-full"
+                  images.length > 1 ? "basis-[88%]" : "basis-full",
                 )}
               >
                 <div

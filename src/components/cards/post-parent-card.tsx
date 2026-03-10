@@ -138,9 +138,7 @@ const PostParentCard: React.FC<PostCardProps> = ({
                 />
               </Link>
 
-              {images && images.length > 0 && (
-                <PostMediaCard images={images} />
-              )}
+              {images && images.length > 0 && <PostMediaCard images={images} />}
 
               {quoteId && (
                 <PostQuoteCard quoteId={quoteId} createdAt={createdAt} />

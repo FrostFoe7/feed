@@ -12,12 +12,12 @@ import StarOnGithub from "@/components/star-on-github";
 import useDialog from "@/store/dialog";
 import CreateWithInput from "@/components/create-with-input";
 import { Skeleton } from "@/components/ui/skeleton";
-
 import HomeTabs from "@/components/home-tabs";
 
-const HomePage: React.FC = () => {
+const FollowingPage: React.FC = () => {
   const { setOpenDialog } = useDialog();
 
+  // For UI demonstration, we'll use the same posts for both tabs for now
   const { data, isLoading, isError, hasNextPage, fetchNextPage } =
     api.post.getInfinitePost.useInfiniteQuery(
       {},
@@ -80,4 +80,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+export default FollowingPage;
